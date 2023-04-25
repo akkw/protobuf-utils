@@ -11,4 +11,5 @@ public interface ProtobufCoder {
 
     void encoder(int fieldNumber, CodedOutputStream output, Object t) throws IOException;
 
+    int getSerializedSize(final int fieldNumber, final Object o);
 }

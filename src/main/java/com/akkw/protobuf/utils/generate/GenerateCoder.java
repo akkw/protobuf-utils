@@ -1,4 +1,4 @@
-package com.akkw.protobuf.utils.coder;
+package com.akkw.protobuf.utils.generate;
 
 import javassist.CannotCompileException;
 

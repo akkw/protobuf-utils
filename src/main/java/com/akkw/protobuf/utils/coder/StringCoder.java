@@ -18,9 +18,25 @@ public class StringCoder implements ProtobufCoder {
     public void encoder(int fieldNumber, CodedOutputStream output, Object o) throws IOException {
         if (o instanceof String) {
             output.writeString(fieldNumber, (String) o);
-        } else if (o instanceof ByteString){
+        } else if (o instanceof ByteString) {
             output.writeBytes(fieldNumber, (ByteString) o);
         }
+    }
+
+    @Override
+    public int getSerializedSize(int fieldNumber, Object o) {
+        if (o == null) {
+            return 0;
+        }
+
+        if (o instanceof String) {
+            return com.google.protobuf.CodedOutputStream
+                    .computeStringSize(fieldNumber, (String) o);
+        } else if (o instanceof ByteString) {
+            return com.google.protobuf.CodedOutputStream
+                    .computeBytesSize(fieldNumber, ByteString.copyFrom((byte[]) o));
+        }
+        return -1;
     }
 
 }

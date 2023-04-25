@@ -14,6 +14,12 @@ public class LongCoder implements ProtobufCoder {
 
     @Override
     public void encoder(int fieldNumber, CodedOutputStream output, Object t) throws IOException {
+        output.writeInt64(4, (long) t);
+    }
 
+    @Override
+    public int getSerializedSize(int fieldNumber, Object o) {
+        return com.google.protobuf.CodedOutputStream
+                .computeInt64Size(fieldNumber, (long) o);
     }
 }
