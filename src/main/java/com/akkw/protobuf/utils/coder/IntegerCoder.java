@@ -15,6 +15,12 @@ public class IntegerCoder implements ProtobufCoder {
 
     @Override
     public void encoder(int fieldNumber, CodedOutputStream output, Object t) throws IOException {
+        output.writeInt32(3, (int) t);
+    }
 
+    @Override
+    public int getSerializedSize(int fieldNumber, Object o) {
+        return com.google.protobuf.CodedOutputStream
+                .computeInt32Size(fieldNumber, (int) o);
     }
 }

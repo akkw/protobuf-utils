@@ -1,8 +1,7 @@
-package com.akkw.protobuf.utils;
+package com.akkw.protobuf.utils.generate;
 
 import com.akkw.protobuf.utils.coder.*;
 import javassist.*;
-import javassist.bytecode.MethodInfo;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -20,6 +19,9 @@ public class DefaultCoderGenerate implements GenerateCoder {
     private Class<?> tragetType;
 
     private CtClass ctClass;
+
+
+    private boolean writeTag;
 
     ClassPool classPool = ClassPool.getDefault();
 
@@ -40,10 +42,12 @@ public class DefaultCoderGenerate implements GenerateCoder {
         basicType.add(boolean.class);
         basicType.add(String.class);
         basicType.add(char.class);
+        basicType.add(byte[].class);
     }
 
-    public DefaultCoderGenerate(Class<?> sourceType) throws Exception {
+    public DefaultCoderGenerate(Class<?> sourceType, boolean writeTag) throws Exception {
         this.sourceType = sourceType;
+        this.writeTag = writeTag;
     }
 
     @Override
@@ -52,11 +56,13 @@ public class DefaultCoderGenerate implements GenerateCoder {
         addCoderInterface();
         addCoderFields();
         addConstructor();
+        addSerializedSizeBody();
         addEncoderMethodBody();
         addDecoderMethodBody();
         ctClass.writeFile("/Users/qiangzhiwei/code/java/protobuf-utils/src/main/resources");
         tragetType = ctClass.toClass();
     }
+
 
     private void addConstructor() throws Exception {
         CtConstructor ctConstructor = CtNewConstructor.defaultConstructor(ctClass);
@@ -94,6 +100,45 @@ public class DefaultCoderGenerate implements GenerateCoder {
         decoderProtobufCoderField();
     }
 
+    private void addSerializedSizeBody() throws CannotCompileException {
+        String serializedSizeCode = generateSerializedSizeMethodDefinition() +
+                generateSerializedSizeMethodBody() +
+                methodClose();
+        CtMethod decoder = CtMethod.make(serializedSizeCode, ctClass);
+        ctClass.addMethod(decoder);
+    }
+
+    private String generateSerializedSizeMethodDefinition() {
+        return "public int getSerializedSize(int fieldNumber, Object o) { \n";
+    }
+
+    private String generateSerializedSizeMethodBody() {
+
+        StringBuilder builder = new StringBuilder();
+        Field[] fields = sourceType.getDeclaredFields();
+        builder.append("int serializedSize = 0; \n");
+        builder.append("java.lang.reflect.Field[] fields = o.getClass().getDeclaredFields();\n");
+        builder.append("Object value;\n");
+        builder.append("java.lang.reflect.Field field;\n");
+        for (int i = 0; i < fields.length; i++) {
+            builder.append(String.format("field = fields[%d];\n", i));
+            builder.append("field.setAccessible(true);");
+            builder.append(String.format("value = fields[%d].get(o);\n", i));
+            builder.append(String.format("serializedSize += %s.getSerializedSize(%d, value);\n", fields[i].getName() + "Coder", i + 1));
+//            builder.append("System.out.println(\"filed: \" +serializedSize);");
+        }
+        builder.append("if (fieldNumber != 0) { \n");
+//        builder.append("System.out.println(\"fieldNumber: \" +fieldNumber);");
+        builder.append("serializedSize += com.google.protobuf.CodedOutputStream.computeTagSize(fieldNumber) + " +
+                "com.google.protobuf.CodedOutputStream.computeUInt32SizeNoTag(serializedSize);\n");
+        builder.append("}");
+//        builder.append("System.out.println(serializedSize);");
+        builder.append("return serializedSize; \n");
+        return builder.toString();
+    }
+
+
+
     private void addEncoderMethodBody() throws CannotCompileException {
         String encoderCode = generateEncoderBody();
         CtMethod encoder = CtMethod.make(encoderCode, ctClass);
@@ -126,9 +171,14 @@ public class DefaultCoderGenerate implements GenerateCoder {
         return builder.toString();
     }
 
+    private String encoderMethodDefinition() {
+        return "public void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object o) { \n";
+    }
 
     private String invokeEncoderMethod() {
         StringBuilder builder = new StringBuilder();
+        builder.append("\n");
+
         builder.append("java.lang.reflect.Field[] fields = o.getClass().getDeclaredFields();\n");
         builder.append("Object value;\n");
         builder.append("java.lang.reflect.Field field;\n");
@@ -164,7 +214,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
     }
 
     private CtField paresRecombinationType(Field field) throws Exception {
-        DefaultCoderGenerate generate = new DefaultCoderGenerate(field.getType());
+        DefaultCoderGenerate generate = new DefaultCoderGenerate(field.getType(), true);
         generate.generate();
         Class<?> recombinationCtClass = generate.getTargetType();
         return CtField.make(String.format("private %s %s;", recombinationCtClass.getTypeName(), field.getName()  + "Coder"), ctClass);
@@ -178,15 +228,13 @@ public class DefaultCoderGenerate implements GenerateCoder {
             return CtField.make(String.format("private %s %s;", LongCoder.class.getTypeName(), field.getName()  + "Coder"), ctClass);
         } else if (type.isAssignableFrom(Integer.class) || type.isAssignableFrom(int.class)) {
             return CtField.make(String.format("private %s %s;", IntegerCoder.class.getTypeName(), field.getName()  + "Coder"), ctClass);
-        } else if (type.isAssignableFrom(Integer.class) || type.isAssignableFrom(int.class)) {
+        } else if (type.isAssignableFrom(Boolean.class) || type.isAssignableFrom(boolean.class)) {
             return CtField.make(String.format("private %s %s;", BooleanCoder.class.getTypeName(), field.getName()  + "Coder"), ctClass);
         }
         return null;
     }
 
-    private String encoderMethodDefinition() {
-        return "public void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object o) { \n";
-    }
+
 
     private String decoderMethodDefinition() {
         return "public Object decoder(Class type, com.google.protobuf.CodedInputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry) { \n";

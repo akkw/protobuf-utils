@@ -14,6 +14,12 @@ public class BooleanCoder implements ProtobufCoder {
 
     @Override
     public void encoder(int fieldNumber, CodedOutputStream output, Object t) throws IOException {
+        output.writeBool(2, (boolean) t);
+    }
 
+    @Override
+    public int getSerializedSize(int fieldNumber, Object o) {
+        return com.google.protobuf.CodedOutputStream
+                .computeBoolSize(fieldNumber, (boolean) o);
     }
 }
