@@ -15,7 +15,7 @@ public class IntegerCoder implements ProtobufCoder {
 
     @Override
     public void encoder(int fieldNumber, CodedOutputStream output, Object t) throws IOException {
-        output.writeInt32(3, (int) t);
+        output.writeInt32(fieldNumber, (int) t);
     }
 
     @Override

@@ -178,7 +178,14 @@ public class DefaultCoderGenerate implements GenerateCoder {
     private String invokeEncoderMethod() {
         StringBuilder builder = new StringBuilder();
         builder.append("\n");
+        if (writeTag) {
+            builder.append("output.writeTag(fieldNumber, com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED);");
+            builder.append("int size = getSerializedSize(0, o);");
+            builder.append("System.out.println(\"getSerializedSize: \" + size);");
 
+            builder.append("output.writeUInt32NoTag(size);");
+
+        }
         builder.append("java.lang.reflect.Field[] fields = o.getClass().getDeclaredFields();\n");
         builder.append("Object value;\n");
         builder.append("java.lang.reflect.Field field;\n");
@@ -198,10 +205,6 @@ public class DefaultCoderGenerate implements GenerateCoder {
             ctClass.addField(paresFieldType(field));
 //            ctClass.addField(addField(field));
         }
-    }
-
-    private CtField addField(Field field) throws CannotCompileException {
-        return CtField.make(String.format("private %s %s;", field.getClass().getTypeName(), (field.getName())), ctClass);
     }
 
     CtField paresFieldType(Field field) throws Exception {

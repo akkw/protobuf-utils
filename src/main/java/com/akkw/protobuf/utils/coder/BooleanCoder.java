@@ -14,7 +14,7 @@ public class BooleanCoder implements ProtobufCoder {
 
     @Override
     public void encoder(int fieldNumber, CodedOutputStream output, Object t) throws IOException {
-        output.writeBool(2, (boolean) t);
+        output.writeBool(fieldNumber, (boolean) t);
     }
 
     @Override
