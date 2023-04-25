@@ -6,9 +6,4 @@ import java.lang.reflect.Field;
 
 public interface GenerateCoder {
     void generate() throws Exception;
-
-
-    String getCode();
-
-
 }
