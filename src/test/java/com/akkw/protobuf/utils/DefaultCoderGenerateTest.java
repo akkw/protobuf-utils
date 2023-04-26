@@ -5,6 +5,7 @@ import com.akkw.protobuf.utils.coder.ProtobufCoder;
 import com.akkw.protobuf.utils.generate.DefaultCoderGenerate;
 import com.akkw.protobuf.utils.model.Test;
 import com.akkw.protobuf.utils.model.TestSku;
+import com.akkw.protobuf.utils.model.TestSkuA;
 import com.google.protobuf.CodedOutputStream;
 
 import java.util.Arrays;
@@ -19,7 +20,8 @@ public class DefaultCoderGenerateTest {
 
         ProtobufCoder o = (ProtobufCoder)targetType.newInstance();
         TestSku testSku = new TestSku("testSku", 1);
-        Test test = new Test(null, true, 32, 1000, testSku, "test");
+        TestSkuA testSkuA = new TestSkuA("testSkuA", 2);
+        Test test = new Test(null, true, 32, testSkuA, 1000, testSku, "test");
 
         int serializedSize = o.getSerializedSize(0, test);
         byte[] bytes = new byte[serializedSize];

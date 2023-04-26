@@ -240,16 +240,8 @@ public class DefaultCoderGenerate implements GenerateCoder {
         return type.getName() + "$JavaToProtobufCoder";
     }
 
-    public CtClass getCtClass() {
-        return ctClass;
-    }
-
     public Class<?> getTargetType() {
         return tragetType;
     }
 
-    @Override
-    public String getCode() {
-        return null;
-    }
 }
