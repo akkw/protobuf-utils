@@ -14,7 +14,7 @@ public class LongCoder implements ProtobufCoder {
 
     @Override
     public void encoder(int fieldNumber, CodedOutputStream output, Object t) throws IOException {
-        output.writeInt64(4, (long) t);
+        output.writeInt64(fieldNumber, (long) t);
     }
 
     @Override
