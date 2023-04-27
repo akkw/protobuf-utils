@@ -2,12 +2,12 @@ package com.akkw.protobuf.utils.generate;
 
 import com.akkw.protobuf.utils.coder.*;
 import javassist.*;
-import sun.tools.java.ClassFile;
 
-import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class DefaultCoderGenerate implements GenerateCoder {
@@ -22,7 +22,10 @@ public class DefaultCoderGenerate implements GenerateCoder {
 
     private CtClass ctClass;
 
-    ClassPool classPool = ClassPool.getDefault();
+    private final ClassPool classPool = ClassPool.getDefault();
+
+    private final Map<Type, ProtobufCoder> coderCache = new ConcurrentHashMap<>();
+
 
     static {
         basicType.add(Byte.class);
@@ -42,6 +45,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
         basicType.add(String.class);
         basicType.add(char.class);
         basicType.add(byte[].class);
+
     }
 
     public DefaultCoderGenerate(Class<?> sourceType) throws Exception {
@@ -57,7 +61,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
         addSerializedSizeBody();
         addEncoderMethodBody();
         addDecoderMethodBody();
-        ctClass.writeFile("/Users/qiangzhiwei/code/java/protobuf-utils/src/main/resources");
+        ctClass.writeFile("/Users/qiangzhiwei/code/java/protobuf-utils/protobuf-utils-coder/src/main/resources");
         tragetType = ctClass.toClass();
     }
 
@@ -107,8 +111,8 @@ public class DefaultCoderGenerate implements GenerateCoder {
     }
 
     private String generateSerializedSizeMethodBody() {
+        System.out.println();
         StringBuilder builder = new StringBuilder();
-        Field[] fields = sourceType.getDeclaredFields();
         builder.append("int serializedSize = 0; \n");
         builder.append("java.lang.reflect.Field[] fields = o.getClass().getDeclaredFields();\n");
         builder.append("Object value;\n");
@@ -203,10 +207,18 @@ public class DefaultCoderGenerate implements GenerateCoder {
     }
 
     private String paresRecombinationType(Class<?> type, int fieldIndex) throws Exception {
-        DefaultCoderGenerate generate = new DefaultCoderGenerate(type);
-        generate.generate();
-        Class<?> recombinationCtClass = generate.getTargetType();
-        return String.format("coder[%d] = %s.class.newInstance();", fieldIndex, recombinationCtClass.getName());
+        if (!coderCache.containsKey(type)) {
+            DefaultCoderGenerate generate = new DefaultCoderGenerate(type);
+            generate.generate();
+            Class<?> recombinationCtClass = generate.getTargetType();
+            Constructor<?> constructor = recombinationCtClass.getDeclaredConstructors()[0];
+//            coderCache.put(recombinationCtClass, (ProtobufCoder) );
+            return String.format("coder[%d] = %s.class.newInstance();", fieldIndex, recombinationCtClass.getName());
+        } else {
+            ProtobufCoder protobufCoder = coderCache.get(type);
+
+        }
+        return null;
     }
 
     private String paresBasicType(Class<?> type, int fieldIndex) throws Exception {

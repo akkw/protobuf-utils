@@ -1,27 +1,26 @@
-package com.akkw.protobuf.utils;
+package com.akkw.protobuf.utils.generate;
 
 
 import com.akkw.protobuf.utils.coder.ProtobufCoder;
-import com.akkw.protobuf.utils.generate.DefaultCoderGenerate;
-import com.akkw.protobuf.utils.model.Test;
 import com.akkw.protobuf.utils.model.TestSku;
 import com.akkw.protobuf.utils.model.TestSkuA;
 import com.google.protobuf.CodedOutputStream;
+import org.junit.Test;
 
 import java.util.Arrays;
 
 public class DefaultCoderGenerateTest {
-    @org.junit.Test
+    @Test
     public void test() throws Exception {
 
-        DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(Test.class);
+        DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(com.akkw.protobuf.utils.model.Test.class);
         defaultCoderGenerate.generate();
         Class<?> targetType = defaultCoderGenerate.getTargetType();
 
         ProtobufCoder o = (ProtobufCoder)targetType.newInstance();
         TestSku testSku = new TestSku("testSku", 1);
         TestSkuA testSkuA = new TestSkuA("testSkuA", 2);
-        Test test = new Test(null, true, 32, testSkuA, 1000, testSku, "test");
+        com.akkw.protobuf.utils.model.Test test = new com.akkw.protobuf.utils.model.Test(null, true, 32, testSkuA, 1000, testSku, "test");
 
         int serializedSize = o.getSerializedSize(0, test);
         byte[] bytes = new byte[serializedSize];
