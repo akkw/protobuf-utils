@@ -21,9 +21,10 @@ public class DefaultCoderGenerateTest {
         ProtobufCoder o = (ProtobufCoder)targetType.newInstance();
         TestSku testSku = new TestSku("testSku", 1);
         TestSkuA testSkuA = new TestSkuA("testSkuA", 2);
-        Test test = new Test(null, true, 32, testSkuA, 1000, testSku, "test");
+        com.akkw.protobuf.utils.model.Test test = new com.akkw.protobuf.utils.model.Test(null, true, 32, testSkuA, 1000, testSku, "test");
 
         int serializedSize = o.getSerializedSize(0, test);
+        System.out.println(serializedSize);
         byte[] bytes = new byte[serializedSize];
         CodedOutputStream codedOutputStream = CodedOutputStream.newInstance(bytes);
         o.encoder(0, codedOutputStream, test);
