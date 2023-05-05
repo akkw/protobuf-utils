@@ -7,7 +7,9 @@ import com.akkw.protobuf.utils.model.TestSkuA;
 import com.google.protobuf.CodedOutputStream;
 import org.junit.Test;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.Map;
 
 public class DefaultCoderGenerateTest {
     @Test
@@ -16,8 +18,9 @@ public class DefaultCoderGenerateTest {
         DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(com.akkw.protobuf.utils.model.Test.class);
         defaultCoderGenerate.generate();
         Class<?> targetType = defaultCoderGenerate.getTargetType();
-
-        ProtobufCoder o = (ProtobufCoder)targetType.newInstance();
+        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class);
+        declaredConstructor.setAccessible(true);
+        ProtobufCoder o = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache());
         TestSku testSku = new TestSku("testSku", 1);
         TestSkuA testSkuA = new TestSkuA("testSkuA", 2);
         com.akkw.protobuf.utils.model.Test test = new com.akkw.protobuf.utils.model.Test(null, true, 32, testSkuA, 1000, testSku, "test");
