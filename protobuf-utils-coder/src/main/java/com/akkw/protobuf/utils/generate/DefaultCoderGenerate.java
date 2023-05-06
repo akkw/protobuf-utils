@@ -60,9 +60,9 @@ public class DefaultCoderGenerate implements GenerateCoder {
     public void generate() throws Exception {
         ctClass = classPool.makeClass(className(sourceType));
         addCoderInterface();
-        addCoderFields();
+        addCoderCache();
         paresFields();
-        addConstructor();
+        generateConstructor();
         addSerializedSizeBody();
         addEncoderMethodBody();
         addDecoderMethodBody();
@@ -78,7 +78,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
     }
 
 
-    private void addConstructor() throws Exception {
+    private void generateConstructor() throws Exception {
         CtClass[] param = {classPool.get("java.util.Map")};
         CtClass[] exception = {classPool.get("java.lang.InstantiationException"), classPool.get("java.lang.IllegalAccessException")};
         CtConstructor ctConstructor = CtNewConstructor.make(param, exception, ctClass);
@@ -88,17 +88,15 @@ public class DefaultCoderGenerate implements GenerateCoder {
     }
 
     private String generateConstructorNameBody() throws Exception {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{\n");
-        builder.append("this.coderCache = $1;\n");
-        builder.append("}");
-        return builder.toString();
+        return "{\n" +
+                "this.coderCache = $1;\n" +
+                "}";
     }
 
     private void addDecoderMethodBody() throws CannotCompileException {
     }
 
-    private void addCoderFields() throws Exception {
+    private void addCoderCache() throws Exception {
         generateProtobufCoderField();
     }
 
@@ -175,24 +173,21 @@ public class DefaultCoderGenerate implements GenerateCoder {
 
     private String invokeEncoderMethod() {
         StringBuilder builder = new StringBuilder();
-//        builder.append("\n");
-//        builder.append("java.lang.reflect.Field[] fields = o.getClass().getDeclaredFields();\n");
-//        builder.append("Object value;\n");
-//        builder.append("java.lang.reflect.Field field;\n");
-//        builder.append("for (int i = 0; i < fields.length; i++) { \n");
-//        builder.append("field = fields[i]; \n");
-//        builder.append("field.setAccessible(true);");
-//        builder.append("value = fields[i].get(o);\n");
-//        builder.append("coder[i].encoder(i + 1, output, value, true);\n");
-//        builder.append("}");
+        builder.append("\n");
+        builder.append("java.lang.reflect.Field[] fields = o.getClass().getDeclaredFields();\n");
+        builder.append("Object value;\n");
+        builder.append("java.lang.reflect.Field field;\n");
+        builder.append("for (int i = 0; i < fields.length; i++) { \n");
+        builder.append("field = fields[i]; \n");
+        builder.append("field.setAccessible(true);");
+        builder.append("value = fields[i].get(o);\n");
+        builder.append("((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())).encoder(i + 1, output, value, true);\n");
+        builder.append("}");
         return builder.toString();
     }
 
 
     private void generateProtobufCoderField() throws Exception {
-        addProtobufCoderTypeArray();
-    }
-    private void addProtobufCoderTypeArray() throws Exception {
         CtField cacheField = CtField.make("java.util.Map coderCache;", ctClass);
         ctClass.addField(cacheField);
     }
