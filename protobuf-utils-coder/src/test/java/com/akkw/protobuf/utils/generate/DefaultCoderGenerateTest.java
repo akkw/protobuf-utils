@@ -4,6 +4,7 @@ package com.akkw.protobuf.utils.generate;
 import com.akkw.protobuf.utils.coder.ProtobufCoder;
 import com.akkw.protobuf.utils.model.TestSku;
 import com.akkw.protobuf.utils.model.TestSkuA;
+import com.akkw.test.example.model.Sku;
 import com.google.protobuf.CodedOutputStream;
 import org.junit.Test;
 
@@ -49,5 +50,13 @@ public class DefaultCoderGenerateTest {
         o.encoder(0, codedOutputStream, testSku);
 //        codedOutputStream.checkNoSpaceLeft();
         System.out.println(Arrays.toString(bytes));
+    }
+
+
+    @Test
+    public void skuTestEncoder() throws Exception {
+        DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(Sku.class);
+        defaultCoderGenerate.generate();
+        Class<?> targetType = defaultCoderGenerate.getTargetType();
     }
 }

@@ -5,6 +5,7 @@ import javassist.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,9 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultCoderGenerate implements GenerateCoder {
 
-    private static Map<Type, ProtobufCoder> types = new HashMap<>();
-
     public final static Set<Type> basicType = new HashSet<>();
+
+    private final static Set<Type> collectionType = new HashSet<>();
 
     private final Class<?> sourceType;
 
@@ -45,10 +46,10 @@ public class DefaultCoderGenerate implements GenerateCoder {
         basicType.add(String.class);
         basicType.add(char.class);
         basicType.add(byte[].class);
-
+        collectionType.add(List.class);
     }
 
-    public DefaultCoderGenerate(Class<?> sourceType) throws Exception {
+    public DefaultCoderGenerate(Class<?> sourceType) {
         this.sourceType = sourceType;
     }
 
@@ -193,39 +194,62 @@ public class DefaultCoderGenerate implements GenerateCoder {
     }
 
     void paresFieldType(Field field) throws Exception {
-        Class<?> type = field.getType();
-        if (basicType.contains(type)) {
-            paresBasicType(type);
+        Class<?> aClass = field.getType();
+        if (basicType.contains(aClass)) {
+            paresBasicType(aClass);
+        } else if (collectionType.contains(aClass)) {
+            paresCollectionType(field);
         } else {
-            paresRecombinationType(type);
+            paresRecombinationType(aClass);
         }
     }
 
-    private void paresRecombinationType(Class<?> type) throws Exception {
-        if (!coderCache.containsKey(type)) {
-            DefaultCoderGenerate generate = new DefaultCoderGenerate(type);
+    private void paresCollectionType(Field field) throws Exception {
+        Class<?> aClass = field.getType();
+        if (aClass.isAssignableFrom(List.class)) {
+            Type genericType = field.getGenericType();
+            if (genericType instanceof ParameterizedType) {
+                Type[] actualTypeArguments = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
+                for (Type type : actualTypeArguments) {
+                    if (!coderCache.containsKey(type)) {
+                        if (basicType.contains(type)) {
+                            paresBasicType((Class<?>)type);
+                        } else if (collectionType.contains(type)) {
+                            paresCollectionType(field);
+                        }else {
+                            paresRecombinationType((Class<?>)type);
+                        }
+                    }
+                }
+            } else {
+                throw new IllegalArgumentException(field.getName() + " not exist generic " + field.getGenericType() + "<vacancy>");
+            }
+        }
+    }
+
+    private void paresRecombinationType(Class<?> aClass) throws Exception {
+        if (!coderCache.containsKey(aClass)) {
+            DefaultCoderGenerate generate = new DefaultCoderGenerate(aClass);
             generate.generate();
             Class<?> recombinationCtClass = generate.getTargetType();
             Constructor<?> constructor = recombinationCtClass.getDeclaredConstructors()[0];
-            coderCache.put(type, (ProtobufCoder) constructor.newInstance(coderCache));
+            coderCache.put(aClass, (ProtobufCoder) constructor.newInstance(coderCache));
         }
     }
 
-    private void paresBasicType(Class<?> type) throws Exception {
-        if (type.isAssignableFrom(String.class) || type.isAssignableFrom(byte[].class)) {
+    private void paresBasicType(Class<?> aClass) throws Exception {
+        if (aClass.isAssignableFrom(String.class) || aClass.isAssignableFrom(byte[].class)) {
             coderCache.put(String.class, new StringCoder());
             coderCache.put(byte[].class, new StringCoder());
-        } else if (type.isAssignableFrom(Long.class) || type.isAssignableFrom(long.class)) {
+        } else if (aClass.isAssignableFrom(Long.class) || aClass.isAssignableFrom(long.class)) {
             coderCache.put(Long.class, new LongCoder());
             coderCache.put(long.class, new LongCoder());
-        } else if (type.isAssignableFrom(Integer.class) || type.isAssignableFrom(int.class)) {
+        } else if (aClass.isAssignableFrom(Integer.class) || aClass.isAssignableFrom(int.class)) {
             coderCache.put(Integer.class, new IntegerCoder());
             coderCache.put(int.class, new IntegerCoder());
-        } else if (type.isAssignableFrom(Boolean.class) || type.isAssignableFrom(boolean.class)) {
+        } else if (aClass.isAssignableFrom(Boolean.class) || aClass.isAssignableFrom(boolean.class)) {
             coderCache.put(Boolean.class, new BooleanCoder());
             coderCache.put(boolean.class, new BooleanCoder());
-        } else if (type.isAssignableFrom(List.class)) {
-            coderCache.put(List.class, new ListCoder(coderCache));
         }
     }
 
