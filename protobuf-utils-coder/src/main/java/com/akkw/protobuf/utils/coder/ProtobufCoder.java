@@ -19,7 +19,7 @@ public interface ProtobufCoder {
         encoder(fieldNumber, output, o);
     }
 
-    void encoder(int fieldNumber, CodedOutputStream output, Object t) throws IOException;
+    void encoder(int fieldNumber, CodedOutputStream output, Object o) throws IOException;
 
     int getSerializedSize(int fieldNumber, Object o);
 }

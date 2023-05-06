@@ -1,24 +1,26 @@
-package com.akkw.protobuf.utils;
+package com.akkw.protobuf.utils.generate;
 
 
 import com.akkw.protobuf.utils.coder.ProtobufCoder;
-import com.akkw.protobuf.utils.generate.DefaultCoderGenerate;
-import com.akkw.protobuf.utils.model.Test;
 import com.akkw.protobuf.utils.model.TestSku;
 import com.akkw.protobuf.utils.model.TestSkuA;
 import com.google.protobuf.CodedOutputStream;
+import org.junit.Test;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.Map;
 
 public class DefaultCoderGenerateTest {
-    @org.junit.Test
+    @Test
     public void test() throws Exception {
 
-        DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(Test.class);
+        DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(com.akkw.protobuf.utils.model.Test.class);
         defaultCoderGenerate.generate();
         Class<?> targetType = defaultCoderGenerate.getTargetType();
-
-        ProtobufCoder o = (ProtobufCoder)targetType.newInstance();
+        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class);
+        declaredConstructor.setAccessible(true);
+        ProtobufCoder o = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache());
         TestSku testSku = new TestSku("testSku", 1);
         TestSkuA testSkuA = new TestSkuA("testSkuA", 2);
         com.akkw.protobuf.utils.model.Test test = new com.akkw.protobuf.utils.model.Test(null, true, 32, testSkuA, 1000, testSku, "test");
