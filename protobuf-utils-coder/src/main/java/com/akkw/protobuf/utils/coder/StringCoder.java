@@ -24,17 +24,17 @@ public class StringCoder implements ProtobufCoder {
     }
 
     @Override
-    public int getSerializedSize(int fieldNumber, Object o) {
+    public int getSerializedSize(int fieldNumber, Object o, boolean writeTag) {
         if (o == null) {
             return 0;
         }
 
         if (o instanceof String) {
-            return com.google.protobuf.CodedOutputStream
-                    .computeStringSize(fieldNumber, (String) o);
+            return writeTag ?  com.google.protobuf.CodedOutputStream
+                    .computeStringSize(fieldNumber, (String) o) : CodedOutputStream.computeStringSizeNoTag((String) o);
         } else if (o instanceof ByteString) {
-            return com.google.protobuf.CodedOutputStream
-                    .computeBytesSize(fieldNumber, ByteString.copyFrom((byte[]) o));
+            return writeTag ? com.google.protobuf.CodedOutputStream
+                    .computeBytesSize(fieldNumber, ByteString.copyFrom((byte[]) o)) : CodedOutputStream.computeBytesSizeNoTag((ByteString) o);
         }
         return -1;
     }

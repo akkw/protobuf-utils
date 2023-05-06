@@ -16,12 +16,31 @@ public class UserJavaObject {
 
     private List<String> strList;
 
+    NickNameJava role;
 
+    private List<NickNameJava> roleList;
 
-    private List<NickNameJava> nickNameJavas;
+    public void setId(int id) {
+        this.id = id;
+    }
 
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-    private Map<String, String> map;
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    private Map<String, MapVauleObjectJava> mapVauleObjectJavaMap;
+    public void setStrList(List<String> strList) {
+        this.strList = strList;
+    }
+
+    public void setNickNameJavas(List<NickNameJava> nickNameJavas) {
+        this.roleList = nickNameJavas;
+    }
+
+    //    private Map<String, String> map;
+//
+//    private Map<String, MapVauleObjectJava> mapVauleObjectJavaMap;
 }

@@ -13,7 +13,7 @@ public interface ProtobufCoder {
     default void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean writeTag) throws IOException {
         if (writeTag &&  o != null && !DefaultCoderGenerate.basicType.contains(o.getClass())) {
             output.writeTag(fieldNumber, com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED);
-            int size = getSerializedSize(0, o);
+            int size = getSerializedSize(0, o, false);
             output.writeUInt32NoTag(size);
         }
         encoder(fieldNumber, output, o);
@@ -21,5 +21,5 @@ public interface ProtobufCoder {
 
     void encoder(int fieldNumber, CodedOutputStream output, Object o) throws IOException;
 
-    int getSerializedSize(int fieldNumber, Object o);
+    int getSerializedSize(int fieldNumber, Object o, boolean writeTag);
 }

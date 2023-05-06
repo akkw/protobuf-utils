@@ -1,5 +1,6 @@
 package com.akkw.protobuf.utils.coder;
 
+import com.akkw.protobuf.utils.generate.DefaultCoderGenerate;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.ExtensionRegistryLite;
@@ -33,7 +34,15 @@ public class ListCoder implements ProtobufCoder {
     }
 
     @Override
-    public int getSerializedSize(int fieldNumber, Object o) {
-        return 0;
+    public int getSerializedSize(int fieldNumber, Object o, boolean writeTag) {
+        List<?> list = (List<?>) o;
+        int size = 0;
+        for (Object item : list) {
+            size += coderCache.get(item.getClass()).getSerializedSize(fieldNumber, item, false);
+            if (DefaultCoderGenerate.basicType.contains(item.getClass())) {
+                size += 1;
+            }
+        }
+        return size;
     }
 }

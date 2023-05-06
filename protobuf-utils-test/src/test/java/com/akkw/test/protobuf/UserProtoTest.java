@@ -6,7 +6,15 @@ import org.junit.Test;
 import java.util.Arrays;
 
 public class UserProtoTest {
-
+    /**
+     * id: 2
+     * code: 7
+     * name: 12
+     * strList: 21
+     * nickName: 5
+     * nickNameJavas: 29
+     * 29
+     */
     @Test
     public void test() {
 
@@ -26,9 +34,9 @@ public class UserProtoTest {
                 .setName("qzw")
                 .addStrList("strList")
                 .addRoleList(nickNameOb)
-                .putMap("mapKey", "mapValue")
-                .putMapObject("mapObject", mapVauleObject).build();
+                .build();
 
         System.out.println(Arrays.toString(build.toByteArray()));
+        System.out.println(build.toByteArray().length);
     }
 }

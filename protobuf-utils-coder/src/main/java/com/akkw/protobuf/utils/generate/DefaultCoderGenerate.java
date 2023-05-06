@@ -101,14 +101,14 @@ public class DefaultCoderGenerate implements GenerateCoder {
         generateProtobufCoderField();
     }
 
-    private void addSerializedSizeBody() throws CannotCompileException {
+    private void addSerializedSizeBody() throws Exception {
         String serializedSizeCode = generateSerializedSizeMethodDefinition() + generateSerializedSizeMethodBody() + methodClose();
-        CtMethod decoder = CtMethod.make(serializedSizeCode, ctClass);
-        ctClass.addMethod(decoder);
+        CtMethod serializedSizeCodeMe = CtMethod.make(serializedSizeCode, ctClass);
+        ctClass.addMethod(serializedSizeCodeMe);
     }
 
     private String generateSerializedSizeMethodDefinition() {
-        return "public int getSerializedSize(int fieldNumber, Object o) { \n";
+        return "public int getSerializedSize(int fieldNumber, Object o, boolean writeTag) { \n";
     }
 
     private String generateSerializedSizeMethodBody() {
@@ -122,11 +122,9 @@ public class DefaultCoderGenerate implements GenerateCoder {
         builder.append("field.setAccessible(true); \n");
         builder.append("value = field.get(o);\n");
         builder.append("value = field.get(o);\n");
-//        builder.append("System.out.println(i);\n");
-//        builder.append("System.out.println(value);\n");
-//        builder.append("System.out.println(((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())));\n");
-
-        builder.append("serializedSize += ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())).getSerializedSize(i + 1, value);\n");
+        builder.append("if (value != null) {\n");
+        builder.append("serializedSize += ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())).getSerializedSize(i + 1, value, true);\n");
+        builder.append("}\n");
         builder.append("}");
         builder.append("if (fieldNumber != 0) { \n");
         builder.append("serializedSize += com.google.protobuf.CodedOutputStream.computeTagSize(fieldNumber) + " +
@@ -182,7 +180,9 @@ public class DefaultCoderGenerate implements GenerateCoder {
         builder.append("field = fields[i]; \n");
         builder.append("field.setAccessible(true);");
         builder.append("value = fields[i].get(o);\n");
+        builder.append("if(value!=null) {\n");
         builder.append("((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())).encoder(i + 1, output, value, true);\n");
+        builder.append("}");
         builder.append("}");
         return builder.toString();
     }
@@ -224,6 +224,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
             } else {
                 throw new IllegalArgumentException(field.getName() + " not exist generic " + field.getGenericType() + "<vacancy>");
             }
+            coderCache.put(List.class, new ListCoder(coderCache));
         }
     }
 
@@ -260,7 +261,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
 
     private void addCoderInterface() throws Exception {
         CtClass anInterface = classPool.makeInterface(ProtobufCoder.class.getName());
-        anInterface.addMethod(CtMethod.make("int getSerializedSize(int fieldNumber, Object o); \n", anInterface));
+        anInterface.addMethod(CtMethod.make("int getSerializedSize(int fieldNumber, Object o, boolean writeTag); \n", anInterface));
         anInterface.addMethod(CtMethod.make("Object decoder(Class type, com.google.protobuf.CodedInputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry);\n ", anInterface));
         anInterface.addMethod(CtMethod.make("void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object t) throws java.io.IOException;\n ", anInterface));
         anInterface.addMethod(CtMethod.make("void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object o, boolean writeTag) throws java.io.IOException; \n", anInterface));

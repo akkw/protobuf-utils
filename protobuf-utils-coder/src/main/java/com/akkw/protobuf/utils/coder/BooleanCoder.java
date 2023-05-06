@@ -18,7 +18,7 @@ public class BooleanCoder implements ProtobufCoder {
     }
 
     @Override
-    public int getSerializedSize(int fieldNumber, Object o) {
+    public int getSerializedSize(int fieldNumber, Object o, boolean writeTag) {
         return com.google.protobuf.CodedOutputStream
                 .computeBoolSize(fieldNumber, (boolean) o);
     }

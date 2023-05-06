@@ -12,7 +12,7 @@ import java.util.Arrays;
 public class ListCoder {
 
     public static void main(String[] args) {
-        Sku sku = new Sku();
+        Sku sku = new Sku(null, null, null);
         sku.prices = new ArrayList<>();
         sku.nameList = new ArrayList<>();
 
