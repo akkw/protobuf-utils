@@ -59,14 +59,24 @@ public class DefaultCoderGenerateTest {
     public void skuTestEncoder() throws Exception {
         ArrayList<String> strList = new ArrayList<>();
         strList.add("strList");
+        strList.add("asd1");
+        strList.add("asd");
+        strList.add("afasd");
         ArrayList<NickNameJava> nickNameJavas = new ArrayList<>();
         nickNameJavas.add(new NickNameJava("asd"));
+        nickNameJavas.add(new NickNameJava("151245"));
+        nickNameJavas.add(new NickNameJava("sadfasg"));
+        nickNameJavas.add(new NickNameJava("sadfasg123"));
+        nickNameJavas.add(new NickNameJava("11345345"));
+        nickNameJavas.add(new NickNameJava("fgdhfdg"));
         UserJavaObject userJavaObject = new UserJavaObject();
         userJavaObject.setId(1);
         userJavaObject.setCode("200");
         userJavaObject.setName("qzw");
         userJavaObject.setStrList(strList);
-        userJavaObject.setNickNameJavas(nickNameJavas);
+        userJavaObject.setNickNameJava(new NickNameJava("asd"));
+        userJavaObject.setNickNameList(nickNameJavas);
+
 
         DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(UserJavaObject.class);
         defaultCoderGenerate.generate();

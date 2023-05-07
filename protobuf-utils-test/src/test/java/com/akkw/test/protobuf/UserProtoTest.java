@@ -22,9 +22,6 @@ public class UserProtoTest {
         UserProto.MapVauleObject mapVauleObject = mapVaule.setCode("MapVauleObjectCode").setName("MapVauleObject").build();
 
 
-        UserProto.NickName.Builder nickName = UserProto.NickName.newBuilder();
-        nickName.addNickName("asd");
-        UserProto.NickName nickNameOb = nickName.build();
 
 
         UserProto.User.Builder user = UserProto.User.newBuilder();
@@ -33,7 +30,16 @@ public class UserProtoTest {
                 .setCode("200")
                 .setName("qzw")
                 .addStrList("strList")
-                .addRoleList(nickNameOb)
+                .addStrList("asd1")
+                .addStrList("asd")
+                .addStrList("afasd")
+                .addRoleList(UserProto.NickName.newBuilder().addNickName("asd").build())
+                .addRoleList(UserProto.NickName.newBuilder().addNickName("151245").build())
+                .addRoleList(UserProto.NickName.newBuilder().addNickName("sadfasg").build())
+                .addRoleList(UserProto.NickName.newBuilder().addNickName("sadfasg123").build())
+                .addRoleList(UserProto.NickName.newBuilder().addNickName("11345345").build())
+                .addRoleList(UserProto.NickName.newBuilder().addNickName("fgdhfdg").build())
+                .setRole(UserProto.NickName.newBuilder().addNickName("asd").build())
                 .build();
 
         System.out.println(Arrays.toString(build.toByteArray()));

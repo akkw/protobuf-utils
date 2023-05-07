@@ -15,7 +15,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
 
     public final static Set<Type> basicType = new HashSet<>();
 
-    private final static Set<Type> collectionType = new HashSet<>();
+    public final static Set<Type> collectionType = new HashSet<>();
 
     private final Class<?> sourceType;
 
@@ -47,6 +47,8 @@ public class DefaultCoderGenerate implements GenerateCoder {
         basicType.add(char.class);
         basicType.add(byte[].class);
         collectionType.add(List.class);
+        collectionType.add(ArrayList.class);
+        collectionType.add(LinkedList.class);
     }
 
     public DefaultCoderGenerate(Class<?> sourceType) {
@@ -213,11 +215,11 @@ public class DefaultCoderGenerate implements GenerateCoder {
                 for (Type type : actualTypeArguments) {
                     if (!coderCache.containsKey(type)) {
                         if (basicType.contains(type)) {
-                            paresBasicType((Class<?>)type);
+                            paresBasicType((Class<?>) type);
                         } else if (collectionType.contains(type)) {
                             paresCollectionType(field);
-                        }else {
-                            paresRecombinationType((Class<?>)type);
+                        } else {
+                            paresRecombinationType((Class<?>) type);
                         }
                     }
                 }

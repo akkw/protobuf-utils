@@ -16,9 +16,9 @@ public class UserJavaObject {
 
     private List<String> strList;
 
-    NickNameJava role;
+    NickNameJava nickNameJava;
 
-    private List<NickNameJava> roleList;
+    private List<NickNameJava> nickNameList;
 
     public void setId(int id) {
         this.id = id;
@@ -36,8 +36,13 @@ public class UserJavaObject {
         this.strList = strList;
     }
 
-    public void setNickNameJavas(List<NickNameJava> nickNameJavas) {
-        this.roleList = nickNameJavas;
+
+    public void setNickNameJava(NickNameJava nickNameJava) {
+        this.nickNameJava = nickNameJava;
+    }
+
+    public void setNickNameList(List<NickNameJava> nickNameList) {
+        this.nickNameList = nickNameList;
     }
 
     //    private Map<String, String> map;

@@ -6,6 +6,7 @@ import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.ExtensionRegistryLite;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface ProtobufCoder {
     Object decoder(Class<?> type, CodedInputStream input, ExtensionRegistryLite extensionRegistry);
