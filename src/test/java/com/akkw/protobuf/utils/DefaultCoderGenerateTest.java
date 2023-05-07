@@ -28,5 +28,17 @@ public class DefaultCoderGenerateTest {
         o.encoder(0, codedOutputStream, test);
 //        codedOutputStream.checkNoSpaceLeft();
         System.out.println(Arrays.toString(bytes));
+
+
+        DefaultCoderGenerate defaultCoderGenerate1 = new DefaultCoderGenerate(TestSku.class, false);
+        defaultCoderGenerate1.generate();
+        Class<?> targetType1 = defaultCoderGenerate.getTargetType();
+        final ProtobufCoder o1 = (ProtobufCoder) targetType1.newInstance();
+
+        int serializedSize1 = o1.getSerializedSize(0, test);
+        byte[] bytes1 = new byte[serializedSize1];
+        CodedOutputStream codedOutputStream1 = CodedOutputStream.newInstance(bytes1);
+        o1.encoder(0, codedOutputStream1, testSku);
+        System.out.println(Arrays.toString(bytes1));
     }
 }
