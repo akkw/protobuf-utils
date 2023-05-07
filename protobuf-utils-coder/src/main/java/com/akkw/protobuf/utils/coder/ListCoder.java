@@ -25,41 +25,37 @@ public class ListCoder implements ProtobufCoder {
 
 
     @Override
-    public void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean writeTag) throws IOException {
+    public void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean writeTag, boolean isList) throws IOException {
         List<?> list = (List<?>) o;
         for (Object item : list) {
             if (writeTag && !DefaultCoderGenerate.basicType.contains(item.getClass())) {
                 output.writeTag(fieldNumber, com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED);
-                int size = getSerializedSize(0, item, false);
+                int size = getSerializedSize(0, item, false, true);
                 output.writeUInt32NoTag(size);
             }
-            encoder(fieldNumber, output, item);
+            encoder(fieldNumber, output, item, true);
         }
     }
 
     @Override
-    public void encoder(int fieldNumber, CodedOutputStream output, Object o) throws IOException {
-//        List<?> list = (List<?>) o;
-//        for (Object item : list) {
-//            coderCache.get(item.getClass()).encoder(fieldNumber,output, item);
-//        }
-        coderCache.get(o.getClass()).encoder(fieldNumber,output, o);
+    public void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean isList) throws IOException {
+        coderCache.get(o.getClass()).encoder(fieldNumber,output, o, isList);
     }
 
     @Override
-    public int getSerializedSize(int fieldNumber, Object o, boolean writeTag) {
+    public int getSerializedSize(int fieldNumber, Object o, boolean writeTag, boolean isList) {
         int size = 0;
         if (o instanceof List) {
             List<?> list = (List<?>) o;
 
             for (Object item : list) {
-                size += coderCache.get(item.getClass()).getSerializedSize(fieldNumber, item, false);
+                size += coderCache.get(item.getClass()).getSerializedSize(fieldNumber, item, false, true);
                 if (DefaultCoderGenerate.basicType.contains(item.getClass())) {
                     size += 1;
                 }
             }
         } else {
-            size += coderCache.get(o.getClass()).getSerializedSize(fieldNumber, o, false);
+            size += coderCache.get(o.getClass()).getSerializedSize(fieldNumber, o, false, isList);
         }
         return size;
     }

@@ -20,6 +20,13 @@ public class UserJavaObject {
 
     private List<NickNameJava> nickNameList;
 
+    private byte[] body;
+
+
+    public void setBody(byte[] body) {
+        this.body = body;
+    }
+
     public void setId(int id) {
         this.id = id;
     }

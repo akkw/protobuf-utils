@@ -110,7 +110,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
     }
 
     private String generateSerializedSizeMethodDefinition() {
-        return "public int getSerializedSize(int fieldNumber, Object o, boolean writeTag) { \n";
+        return "public int getSerializedSize(int fieldNumber, Object o, boolean writeTag, boolean isList) { \n";
     }
 
     private String generateSerializedSizeMethodBody() {
@@ -125,7 +125,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
         builder.append("value = field.get(o);\n");
         builder.append("value = field.get(o);\n");
         builder.append("if (value != null) {\n");
-        builder.append("serializedSize += ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())).getSerializedSize(i + 1, value, true);\n");
+        builder.append("serializedSize += ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())).getSerializedSize(i + 1, value, true, isList);\n");
         builder.append("}\n");
         builder.append("}");
         builder.append("if (fieldNumber != 0) { \n");
@@ -169,7 +169,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
     }
 
     private String encoderMethodDefinition() {
-        return "public void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object o) { \n";
+        return "public void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object o, boolean isList) { \n";
     }
 
     private String invokeEncoderMethod() {
@@ -183,7 +183,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
         builder.append("field.setAccessible(true);");
         builder.append("value = fields[i].get(o);\n");
         builder.append("if(value!=null) {\n");
-        builder.append("((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())).encoder(i + 1, output, value, true);\n");
+        builder.append("((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())).encoder(i + 1, output, value, true, isList);\n");
         builder.append("}");
         builder.append("}");
         return builder.toString();
@@ -263,10 +263,10 @@ public class DefaultCoderGenerate implements GenerateCoder {
 
     private void addCoderInterface() throws Exception {
         CtClass anInterface = classPool.makeInterface(ProtobufCoder.class.getName());
-        anInterface.addMethod(CtMethod.make("int getSerializedSize(int fieldNumber, Object o, boolean writeTag); \n", anInterface));
+        anInterface.addMethod(CtMethod.make("int getSerializedSize(int fieldNumber, Object o, boolean writeTag, boolean isList); \n", anInterface));
         anInterface.addMethod(CtMethod.make("Object decoder(Class type, com.google.protobuf.CodedInputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry);\n ", anInterface));
-        anInterface.addMethod(CtMethod.make("void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object t) throws java.io.IOException;\n ", anInterface));
-        anInterface.addMethod(CtMethod.make("void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object o, boolean writeTag) throws java.io.IOException; \n", anInterface));
+        anInterface.addMethod(CtMethod.make("void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object o, boolean isList) throws java.io.IOException;\n ", anInterface));
+        anInterface.addMethod(CtMethod.make("void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object o, boolean writeTag, boolean isList) throws java.io.IOException; \n", anInterface));
         ctClass.addInterface(anInterface);
     }
 
