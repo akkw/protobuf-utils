@@ -15,28 +15,25 @@ public class StringCoder implements ProtobufCoder {
     }
 
     @Override
-    public void encoder(int fieldNumber, CodedOutputStream output, Object o) throws IOException {
-        if (o instanceof String) {
+    public void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean isList) throws IOException {
+        if (o instanceof String && (isList || ((String) o).length() != 0)) {
             output.writeString(fieldNumber, (String) o);
-        } else if (o instanceof ByteString) {
-            output.writeBytes(fieldNumber, (ByteString) o);
+        } else if (o instanceof byte[] && (isList || ((byte[]) o).length != 0)) {
+            output.writeBytes(fieldNumber, ByteString.copyFrom((byte[]) o));
         }
     }
 
     @Override
-    public int getSerializedSize(int fieldNumber, Object o) {
-        if (o == null) {
-            return 0;
+    public int getSerializedSize(int fieldNumber, Object o, boolean writeTag, boolean isList) {
+        if (o instanceof String && (isList || ((String) o).length() != 0)) {
+            return writeTag ?  com.google.protobuf.CodedOutputStream
+                    .computeStringSize(fieldNumber, (String) o) : CodedOutputStream.computeStringSizeNoTag((String) o);
         }
-
-        if (o instanceof String) {
-            return com.google.protobuf.CodedOutputStream
-                    .computeStringSize(fieldNumber, (String) o);
-        } else if (o instanceof ByteString) {
-            return com.google.protobuf.CodedOutputStream
-                    .computeBytesSize(fieldNumber, ByteString.copyFrom((byte[]) o));
+        if (o instanceof byte[] && (isList || ((byte[]) o).length != 0)) {
+            return writeTag ? com.google.protobuf.CodedOutputStream
+                    .computeBytesSize(fieldNumber, ByteString.copyFrom((byte[]) o)) : CodedOutputStream.computeBytesSizeNoTag(ByteString.copyFrom((byte[]) o));
         }
-        return -1;
+        return 0;
     }
 
 }

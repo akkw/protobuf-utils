@@ -25,6 +25,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>com.akkw</groupId>
+                <artifactId>protobuf-utils-test</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
                 <version>${protobuf.version}</version>

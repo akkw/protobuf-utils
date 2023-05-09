@@ -5,6 +5,7 @@ import javassist.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,9 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultCoderGenerate implements GenerateCoder {
 
-    private static Map<Type, ProtobufCoder> types = new HashMap<>();
-
     public final static Set<Type> basicType = new HashSet<>();
+
+    public final static Set<Type> collectionType = new HashSet<>();
 
     private final Class<?> sourceType;
 
@@ -45,10 +46,15 @@ public class DefaultCoderGenerate implements GenerateCoder {
         basicType.add(String.class);
         basicType.add(char.class);
         basicType.add(byte[].class);
-
+        collectionType.add(List.class);
+        collectionType.add(ArrayList.class);
+        collectionType.add(LinkedList.class);
+        collectionType.add(Map.class);
+        collectionType.add(HashMap.class);
+        collectionType.add(LinkedHashMap.class);
     }
 
-    public DefaultCoderGenerate(Class<?> sourceType) throws Exception {
+    public DefaultCoderGenerate(Class<?> sourceType) {
         this.sourceType = sourceType;
     }
 
@@ -100,14 +106,14 @@ public class DefaultCoderGenerate implements GenerateCoder {
         generateProtobufCoderField();
     }
 
-    private void addSerializedSizeBody() throws CannotCompileException {
+    private void addSerializedSizeBody() throws Exception {
         String serializedSizeCode = generateSerializedSizeMethodDefinition() + generateSerializedSizeMethodBody() + methodClose();
-        CtMethod decoder = CtMethod.make(serializedSizeCode, ctClass);
-        ctClass.addMethod(decoder);
+        CtMethod serializedSizeCodeMe = CtMethod.make(serializedSizeCode, ctClass);
+        ctClass.addMethod(serializedSizeCodeMe);
     }
 
     private String generateSerializedSizeMethodDefinition() {
-        return "public int getSerializedSize(int fieldNumber, Object o) { \n";
+        return "public int getSerializedSize(int fieldNumber, Object o, boolean writeTag, boolean isList) { \n";
     }
 
     private String generateSerializedSizeMethodBody() {
@@ -121,11 +127,10 @@ public class DefaultCoderGenerate implements GenerateCoder {
         builder.append("field.setAccessible(true); \n");
         builder.append("value = field.get(o);\n");
         builder.append("value = field.get(o);\n");
-//        builder.append("System.out.println(i);\n");
-//        builder.append("System.out.println(value);\n");
-//        builder.append("System.out.println(((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())));\n");
-
-        builder.append("serializedSize += ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())).getSerializedSize(i + 1, value);\n");
+        builder.append("if (value != null) {\n");
+        builder.append("serializedSize += ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())).getSerializedSize(i + 1, value, true, isList);\n");
+//        builder.append("System.out.println(field.getName() +\": \"+ serializedSize);\n");
+        builder.append("}\n");
         builder.append("}");
         builder.append("if (fieldNumber != 0) { \n");
         builder.append("serializedSize += com.google.protobuf.CodedOutputStream.computeTagSize(fieldNumber) + " +
@@ -168,7 +173,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
     }
 
     private String encoderMethodDefinition() {
-        return "public void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object o) { \n";
+        return "public void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object o, boolean isList) { \n";
     }
 
     private String invokeEncoderMethod() {
@@ -181,7 +186,9 @@ public class DefaultCoderGenerate implements GenerateCoder {
         builder.append("field = fields[i]; \n");
         builder.append("field.setAccessible(true);");
         builder.append("value = fields[i].get(o);\n");
-        builder.append("((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())).encoder(i + 1, output, value, true);\n");
+        builder.append("if(value!=null) {\n");
+        builder.append("((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())).encoder(i + 1, output, value, true, isList);\n");
+        builder.append("}");
         builder.append("}");
         return builder.toString();
     }
@@ -193,39 +200,67 @@ public class DefaultCoderGenerate implements GenerateCoder {
     }
 
     void paresFieldType(Field field) throws Exception {
-        Class<?> type = field.getType();
-        if (basicType.contains(type)) {
-            paresBasicType(type);
+        Class<?> aClass = field.getType();
+        if (basicType.contains(aClass)) {
+            paresBasicType(aClass);
+        } else if (collectionType.contains(aClass)) {
+            paresCollectionType(field);
         } else {
-            paresRecombinationType(type);
+            paresRecombinationType(aClass);
         }
     }
 
-    private void paresRecombinationType(Class<?> type) throws Exception {
-        if (!coderCache.containsKey(type)) {
-            DefaultCoderGenerate generate = new DefaultCoderGenerate(type);
+    private void paresCollectionType(Field field) throws Exception {
+        Class<?> aClass = field.getType();
+        if (aClass.isAssignableFrom(List.class) || aClass.isAssignableFrom(Map.class)) {
+            Type genericType = field.getGenericType();
+            if (genericType instanceof ParameterizedType) {
+                Type[] actualTypeArguments = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
+                for (Type type : actualTypeArguments) {
+                    if (!coderCache.containsKey(type)) {
+                        if (basicType.contains(type)) {
+                            paresBasicType((Class<?>) type);
+                        } else if (collectionType.contains(type)) {
+                            paresCollectionType(field);
+                        } else {
+                            paresRecombinationType((Class<?>) type);
+                        }
+                    }
+                }
+            } else {
+                throw new IllegalArgumentException(field.getName() + " not exist generic " + field.getGenericType() + "<vacancy>");
+            }
+            if (aClass.isAssignableFrom(List.class)) {
+                coderCache.put(List.class, new ListCoder(coderCache));
+            } else if (aClass.isAssignableFrom(Map.class)) {
+                coderCache.put(Map.class, new MapCoder(coderCache));
+            }
+        }
+    }
+
+    private void paresRecombinationType(Class<?> aClass) throws Exception {
+        if (!coderCache.containsKey(aClass)) {
+            DefaultCoderGenerate generate = new DefaultCoderGenerate(aClass);
             generate.generate();
             Class<?> recombinationCtClass = generate.getTargetType();
             Constructor<?> constructor = recombinationCtClass.getDeclaredConstructors()[0];
-            coderCache.put(type, (ProtobufCoder) constructor.newInstance(coderCache));
+            coderCache.put(aClass, (ProtobufCoder) constructor.newInstance(coderCache));
         }
     }
 
-    private void paresBasicType(Class<?> type) throws Exception {
-        if (type.isAssignableFrom(String.class) || type.isAssignableFrom(byte[].class)) {
+    private void paresBasicType(Class<?> aClass) throws Exception {
+        if (aClass.isAssignableFrom(String.class) || aClass.isAssignableFrom(byte[].class)) {
             coderCache.put(String.class, new StringCoder());
             coderCache.put(byte[].class, new StringCoder());
-        } else if (type.isAssignableFrom(Long.class) || type.isAssignableFrom(long.class)) {
+        } else if (aClass.isAssignableFrom(Long.class) || aClass.isAssignableFrom(long.class)) {
             coderCache.put(Long.class, new LongCoder());
             coderCache.put(long.class, new LongCoder());
-        } else if (type.isAssignableFrom(Integer.class) || type.isAssignableFrom(int.class)) {
+        } else if (aClass.isAssignableFrom(Integer.class) || aClass.isAssignableFrom(int.class)) {
             coderCache.put(Integer.class, new IntegerCoder());
             coderCache.put(int.class, new IntegerCoder());
-        } else if (type.isAssignableFrom(Boolean.class) || type.isAssignableFrom(boolean.class)) {
+        } else if (aClass.isAssignableFrom(Boolean.class) || aClass.isAssignableFrom(boolean.class)) {
             coderCache.put(Boolean.class, new BooleanCoder());
             coderCache.put(boolean.class, new BooleanCoder());
-        } else if (type.isAssignableFrom(List.class)) {
-            coderCache.put(List.class, new ListCoder(coderCache));
         }
     }
 
@@ -236,10 +271,10 @@ public class DefaultCoderGenerate implements GenerateCoder {
 
     private void addCoderInterface() throws Exception {
         CtClass anInterface = classPool.makeInterface(ProtobufCoder.class.getName());
-        anInterface.addMethod(CtMethod.make("int getSerializedSize(int fieldNumber, Object o); \n", anInterface));
+        anInterface.addMethod(CtMethod.make("int getSerializedSize(int fieldNumber, Object o, boolean writeTag, boolean isList); \n", anInterface));
         anInterface.addMethod(CtMethod.make("Object decoder(Class type, com.google.protobuf.CodedInputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry);\n ", anInterface));
-        anInterface.addMethod(CtMethod.make("void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object t) throws java.io.IOException;\n ", anInterface));
-        anInterface.addMethod(CtMethod.make("void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object o, boolean writeTag) throws java.io.IOException; \n", anInterface));
+        anInterface.addMethod(CtMethod.make("void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object o, boolean isList) throws java.io.IOException;\n ", anInterface));
+        anInterface.addMethod(CtMethod.make("void encoder(int fieldNumber, com.google.protobuf.CodedOutputStream output, Object o, boolean writeTag, boolean isList) throws java.io.IOException; \n", anInterface));
         ctClass.addInterface(anInterface);
     }
 
