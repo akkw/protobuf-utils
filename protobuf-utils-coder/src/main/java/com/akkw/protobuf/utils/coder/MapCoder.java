@@ -26,6 +26,26 @@ public class MapCoder implements ProtobufCoder {
     }
 
     @Override
+    public void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean writeTag, boolean isList) throws IOException {
+        Map<?, ?> map = (Map<?,?>) o;
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            output.writeTag(fieldNumber, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+            output.writeUInt32NoTag(getSerializedSize(fieldNumber, entry));
+            writeValue(entry.getKey(), 1, output);
+            writeValue(entry.getValue(), 2, output);
+        }
+
+
+    }
+
+    private void writeValue(Object o, int number, CodedOutputStream output) throws IOException {
+        WireFormat.FieldType keyType = getFieldType(o);
+        output.writeTag(number, keyType.getWireType());
+        writeElementNoTag(output, keyType, o);
+
+    }
+
+    @Override
     public void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean isList) throws IOException {
 
     }
@@ -33,16 +53,24 @@ public class MapCoder implements ProtobufCoder {
     @Override
     public int getSerializedSize(int fieldNumber, Object o, boolean writeTag, boolean isList) {
         Map<?, ?> map = (Map<?, ?>) o;
-        int size = computeTagSize(fieldNumber);
+        int size = 0;
         for (Map.Entry<?, ?> entry : map.entrySet()) {
-            int keySize = computeElementSize(getFieldType(entry.getKey()), 1, entry.getKey());
-            int valueSize = computeElementSize(getFieldType(entry.getValue()), 2, entry.getValue());
-            if (getFieldType(entry.getValue()) == MESSAGE) {
-                valueSize += computeUInt32SizeNoTag(valueSize);
-            }
-            size += computeUInt32SizeNoTag(keySize + valueSize) +keySize + valueSize;
+            size += computeTagSize(fieldNumber);
+            int entrySize = getSerializedSize(fieldNumber, entry);
+            size += computeUInt32SizeNoTag(entrySize) + entrySize;
         }
         return size;
+    }
+
+
+    private int getSerializedSize(int fieldNumber, Map.Entry<?,?> entry) {
+        int keySize = computeElementSize(getFieldType(entry.getKey()), 1, entry.getKey());
+        int valueSize = computeElementSize(getFieldType(entry.getValue()), 2, entry.getValue());
+        if (getFieldType(entry.getValue()) == MESSAGE) {
+            valueSize += computeUInt32SizeNoTag(valueSize);
+        }
+
+        return keySize + valueSize;
     }
 
      int computeElementSize(
@@ -77,5 +105,80 @@ public class MapCoder implements ProtobufCoder {
             return MESSAGE;
         }
 
+    }
+
+    void writeElementNoTag(
+            final CodedOutputStream output, final WireFormat.FieldType type, final Object value)
+            throws IOException {
+        switch (type) {
+            case DOUBLE:
+                output.writeDoubleNoTag((Double) value);
+                break;
+            case FLOAT:
+                output.writeFloatNoTag((Float) value);
+                break;
+            case INT64:
+                output.writeInt64NoTag((Long) value);
+                break;
+            case UINT64:
+                output.writeUInt64NoTag((Long) value);
+                break;
+            case INT32:
+                output.writeInt32NoTag((Integer) value);
+                break;
+            case FIXED64:
+                output.writeFixed64NoTag((Long) value);
+                break;
+            case FIXED32:
+                output.writeFixed32NoTag((Integer) value);
+                break;
+            case BOOL:
+                output.writeBoolNoTag((Boolean) value);
+                break;
+            case GROUP:
+                output.writeGroupNoTag((MessageLite) value);
+                break;
+            case MESSAGE:
+                output.writeUInt32NoTag(coderCache.get(value.getClass()).getSerializedSize(0, value, false, false));
+                coderCache.get(value.getClass()).encoder(0, output, value, false);
+                break;
+            case STRING:
+                if (value instanceof ByteString) {
+                    output.writeBytesNoTag((ByteString) value);
+                } else {
+                    output.writeStringNoTag((String) value);
+                }
+                break;
+            case BYTES:
+                if (value instanceof ByteString) {
+                    output.writeBytesNoTag((ByteString) value);
+                } else {
+                    output.writeByteArrayNoTag((byte[]) value);
+                }
+                break;
+            case UINT32:
+                output.writeUInt32NoTag((Integer) value);
+                break;
+            case SFIXED32:
+                output.writeSFixed32NoTag((Integer) value);
+                break;
+            case SFIXED64:
+                output.writeSFixed64NoTag((Long) value);
+                break;
+            case SINT32:
+                output.writeSInt32NoTag((Integer) value);
+                break;
+            case SINT64:
+                output.writeSInt64NoTag((Long) value);
+                break;
+
+            case ENUM:
+                if (value instanceof Internal.EnumLite) {
+                    output.writeEnumNoTag(((Internal.EnumLite) value).getNumber());
+                } else {
+                    output.writeEnumNoTag(((Integer) value).intValue());
+                }
+                break;
+        }
     }
 }

@@ -68,21 +68,24 @@ public class DefaultCoderGenerateTest {
         nickNameJavas.add(new NickNameJava("sadfasg123"));
         nickNameJavas.add(new NickNameJava("11345345"));
         nickNameJavas.add(new NickNameJava("fgdhfdg"));
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put("map-key","map-value");
+        map.put("map-key1","map-value");
+        map.put("map-key2","map-value");
+        map.put("map-key3","map-value");
         Map<String, MapVauleObjectJava> mapObject = new LinkedHashMap<>();
-//        mapObject.put("map-key", new MapVauleObjectJava("code", "qzw"));
-//        mapObject.put("map-key1", new MapVauleObjectJava("code", "qzw"));
+        mapObject.put("map-key", new MapVauleObjectJava("code", "qzw"));
+        mapObject.put("map-key1", new MapVauleObjectJava("code", "qzw"));
         mapObject.put("map-key2", new MapVauleObjectJava("code", "qzw"));
 
         UserJavaObject userJavaObject = new UserJavaObject();
-//        userJavaObject.setId(1);
-//        userJavaObject.setCode("");
-//        userJavaObject.setName("qzw");
-//        userJavaObject.setStrList(strList);
-//        userJavaObject.setNickNameJava(new NickNameJava("asd"));
-//        userJavaObject.setNickNameList(nickNameJavas);
-//        userJavaObject.setBody("123456".getBytes());
+        userJavaObject.setId(1);
+        userJavaObject.setCode("");
+        userJavaObject.setName("qzw");
+        userJavaObject.setStrList(strList);
+        userJavaObject.setNickNameJava(new NickNameJava("asd"));
+        userJavaObject.setNickNameList(nickNameJavas);
+        userJavaObject.setBody("123456".getBytes());
         userJavaObject.setMap(map);
         userJavaObject.setMapObject(mapObject);
 
