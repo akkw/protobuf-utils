@@ -49,6 +49,9 @@ public class DefaultCoderGenerate implements GenerateCoder {
         collectionType.add(List.class);
         collectionType.add(ArrayList.class);
         collectionType.add(LinkedList.class);
+        collectionType.add(Map.class);
+        collectionType.add(HashMap.class);
+        collectionType.add(LinkedHashMap.class);
     }
 
     public DefaultCoderGenerate(Class<?> sourceType) {
@@ -126,6 +129,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
         builder.append("value = field.get(o);\n");
         builder.append("if (value != null) {\n");
         builder.append("serializedSize += ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())).getSerializedSize(i + 1, value, true, isList);\n");
+//        builder.append("System.out.println(field.getName() +\": \"+ serializedSize);\n");
         builder.append("}\n");
         builder.append("}");
         builder.append("if (fieldNumber != 0) { \n");
@@ -208,7 +212,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
 
     private void paresCollectionType(Field field) throws Exception {
         Class<?> aClass = field.getType();
-        if (aClass.isAssignableFrom(List.class)) {
+        if (aClass.isAssignableFrom(List.class) || aClass.isAssignableFrom(Map.class)) {
             Type genericType = field.getGenericType();
             if (genericType instanceof ParameterizedType) {
                 Type[] actualTypeArguments = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
@@ -226,7 +230,11 @@ public class DefaultCoderGenerate implements GenerateCoder {
             } else {
                 throw new IllegalArgumentException(field.getName() + " not exist generic " + field.getGenericType() + "<vacancy>");
             }
-            coderCache.put(List.class, new ListCoder(coderCache));
+            if (aClass.isAssignableFrom(List.class)) {
+                coderCache.put(List.class, new ListCoder(coderCache));
+            } else if (aClass.isAssignableFrom(Map.class)) {
+                coderCache.put(Map.class, new MapCoder(coderCache));
+            }
         }
     }
 

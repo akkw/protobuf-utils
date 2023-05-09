@@ -5,6 +5,7 @@ import com.protobuf.test.UserProto;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class UserProtoTest {
     /**
@@ -23,27 +24,28 @@ public class UserProtoTest {
         UserProto.MapVauleObject mapVauleObject = mapVaule.setCode("MapVauleObjectCode").setName("MapVauleObject").build();
 
 
-
-
         UserProto.User.Builder user = UserProto.User.newBuilder();
 
         UserProto.User build = user.setId(1)
-                .setCode("")
-                .setName("qzw")
-                .addStrList("strList")
-                .addStrList("asd1")
-                .addStrList("asd")
-                .addStrList("afasd")
-                .addRoleList(UserProto.NickName.newBuilder().addNickName("").build())
-                .addRoleList(UserProto.NickName.newBuilder().addNickName("").build())
-                .addRoleList(UserProto.NickName.newBuilder().addNickName("sadfasg").build())
-                .addRoleList(UserProto.NickName.newBuilder().addNickName("sadfasg123").build())
-                .addRoleList(UserProto.NickName.newBuilder().addNickName("11345345").build())
-                .addRoleList(UserProto.NickName.newBuilder().addNickName("fgdhfdg").build())
-                .setRole(UserProto.NickName.newBuilder().addNickName("asd").build())
-                .setBody(ByteString.copyFrom("123456".getBytes()))
+//                .setCode("")
+//                .setName("qzw")
+//                .addStrList("strList")
+//                .addStrList("asd1")
+//                .addStrList("asd")
+//                .addStrList("afasd")
+//                .addRoleList(UserProto.NickName.newBuilder().addNickName("").build())
+//                .addRoleList(UserProto.NickName.newBuilder().addNickName("").build())
+//                .addRoleList(UserProto.NickName.newBuilder().addNickName("sadfasg").build())
+//                .addRoleList(UserProto.NickName.newBuilder().addNickName("sadfasg123").build())
+//                .addRoleList(UserProto.NickName.newBuilder().addNickName("11345345").build())
+//                .addRoleList(UserProto.NickName.newBuilder().addNickName("fgdhfdg").build())
+//                .setRole(UserProto.NickName.newBuilder().addNickName("asd").build())
+//                .setBody(ByteString.copyFrom("123456".getBytes()))
+                .putMap("map-key", "map-value")
+//                .putMapObject("map-key", UserProto.MapVauleObject.newBuilder().setCode("code").setName("qzw").build())
+//                .putMapObject("map-key1", UserProto.MapVauleObject.newBuilder().setCode("code").setName("qzw").build())
+                .putMapObject("map-key2", UserProto.MapVauleObject.newBuilder().setCode("code").setName("qzw").build())
                 .build();
-
         System.out.println(Arrays.toString(build.toByteArray()));
         System.out.println(build.toByteArray().length);
     }

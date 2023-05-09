@@ -1,5 +1,7 @@
 package com.akkw.test.model;
 
+import com.protobuf.test.UserProto;
+
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +24,20 @@ public class UserJavaObject {
 
     private byte[] body;
 
+
+    private Map<String, String> map;
+
+
+    private Map<String, MapVauleObjectJava> mapObject;
+
+
+    public void setMap(Map<String, String> map) {
+        this.map = map;
+    }
+
+    public void setMapObject(Map<String, MapVauleObjectJava> mapObject) {
+        this.mapObject = mapObject;
+    }
 
     public void setBody(byte[] body) {
         this.body = body;
