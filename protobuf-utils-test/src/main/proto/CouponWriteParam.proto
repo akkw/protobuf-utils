@@ -1,0 +1,20 @@
+//使用 proto3 语法 ,未指定则使用proto2
+syntax = "proto3";
+
+// proto 文件包名
+package com.akkw.protobuf.test.ptoto;
+
+//生成 proto 文件所在包路径，一般来说是和文件包名一致就可以
+option java_package = "com.akkw.protobuf.test.ptoto";
+
+//生成 proto 的文件名
+option java_outer_classname="CouponWriteParamProto";
+
+import "coupon.proto";
+//创建一个 User 对象
+message CouponWriteParam {
+  repeated Coupon couponInfoList = 1;
+  repeated CouponDetail couponDetailInfoList = 2;
+  string invokeSource = 3;
+  map<string, string> extMap = 4;
+}

@@ -13,13 +13,15 @@ public class LongCoder implements ProtobufCoder {
     }
 
     @Override
-    public void encoder(int fieldNumber, CodedOutputStream output, Object t, boolean isList) throws IOException {
-        output.writeInt64(fieldNumber, (long) t);
+    public void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean isList) throws IOException {
+        if ((long) o != 0) {
+            output.writeInt64(fieldNumber, (long) o);
+        }
     }
 
     @Override
     public int getSerializedSize(int fieldNumber, Object o, boolean writeTag, boolean isList) {
-        return com.google.protobuf.CodedOutputStream
-                .computeInt64Size(fieldNumber, (long) o);
+        return (long) o != 0 ? com.google.protobuf.CodedOutputStream
+                .computeInt64Size(fieldNumber, (long) o) : 0;
     }
 }

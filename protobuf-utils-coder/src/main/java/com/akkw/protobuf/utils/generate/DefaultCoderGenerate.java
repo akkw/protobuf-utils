@@ -25,7 +25,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
 
     private final ClassPool classPool = ClassPool.getDefault();
 
-    private final Map<Type, ProtobufCoder> coderCache = new ConcurrentHashMap<>();
+    private static final Map<Type, ProtobufCoder> coderCache = new ConcurrentHashMap<>();
 
 
     static {
@@ -72,8 +72,11 @@ public class DefaultCoderGenerate implements GenerateCoder {
         addSerializedSizeBody();
         addEncoderMethodBody();
         addDecoderMethodBody();
-        ctClass.writeFile("/Users/qiangzhiwei/code/java/protobuf-utils/protobuf-utils-coder/src/main/resources");
         tragetType = ctClass.toClass();
+    }
+
+    private void addDecoderMethodBody() {
+
     }
 
     private void paresFields() throws Exception {
@@ -93,13 +96,10 @@ public class DefaultCoderGenerate implements GenerateCoder {
         ctClass.addConstructor(ctConstructor);
     }
 
-    private String generateConstructorNameBody() throws Exception {
+    private String generateConstructorNameBody(){
         return "{\n" +
                 "this.coderCache = $1;\n" +
                 "}";
-    }
-
-    private void addDecoderMethodBody() throws CannotCompileException {
     }
 
     private void addCoderCache() throws Exception {
@@ -129,7 +129,6 @@ public class DefaultCoderGenerate implements GenerateCoder {
         builder.append("value = field.get(o);\n");
         builder.append("if (value != null) {\n");
         builder.append("serializedSize += ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(field.getType())).getSerializedSize(i + 1, value, true, isList);\n");
-//        builder.append("System.out.println(field.getName() +\": \"+ serializedSize);\n");
         builder.append("}\n");
         builder.append("}");
         builder.append("if (fieldNumber != 0) { \n");
@@ -261,6 +260,18 @@ public class DefaultCoderGenerate implements GenerateCoder {
         } else if (aClass.isAssignableFrom(Boolean.class) || aClass.isAssignableFrom(boolean.class)) {
             coderCache.put(Boolean.class, new BooleanCoder());
             coderCache.put(boolean.class, new BooleanCoder());
+        } else if (aClass.isAssignableFrom(Double.class) || aClass.isAssignableFrom(double.class)) {
+            coderCache.put(Double.class, new DoubleCoder());
+            coderCache.put(double.class, new DoubleCoder());
+        } else if (aClass.isAssignableFrom(Float.class) || aClass.isAssignableFrom(float.class)) {
+            coderCache.put(Float.class, new FloatCoder());
+            coderCache.put(float.class, new FloatCoder());
+        } else if (aClass.isAssignableFrom(Byte.class) || aClass.isAssignableFrom(byte.class)) {
+            coderCache.put(Byte.class, new IntegerCoder());
+            coderCache.put(byte.class, new IntegerCoder());
+        } else if (aClass.isAssignableFrom(Short.class) || aClass.isAssignableFrom(short.class)) {
+            coderCache.put(Short.class, new IntegerCoder());
+            coderCache.put(short.class, new IntegerCoder());
         }
     }
 
