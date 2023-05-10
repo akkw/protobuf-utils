@@ -11,7 +11,11 @@ public class StringCoder implements ProtobufCoder {
 
     @Override
     public Object decoder(Class<?> type, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException {
-        return input.readStringRequireUtf8();
+        if (type.isAssignableFrom(byte[].class)) {
+            return input.readBytes().toByteArray();
+        } else {
+            return input.readStringRequireUtf8();
+        }
     }
 
     @Override

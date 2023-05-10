@@ -1,12 +1,15 @@
 package com.akkw.protobuf.utils.generate;
 
+import com.akkw.protobuf.test.BasicTypeJava;
 import com.akkw.protobuf.test.Coupon;
 import com.akkw.protobuf.test.CouponDetail;
 import com.akkw.protobuf.test.CouponWriteParam;
 import com.akkw.protobuf.test.ptoto.CouponProto;
 import com.akkw.protobuf.test.ptoto.CouponWriteParamProto;
 import com.akkw.protobuf.utils.coder.ProtobufCoder;
+import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
+import com.google.protobuf.ExtensionRegistryLite;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,11 +35,26 @@ public class RecombinationTypeTest {
         CodedOutputStream codedOutputStream = CodedOutputStream.newInstance(bytesValue);
         coder.encoder(0, codedOutputStream, couponWriteParam, false);
         Assert.assertArrayEquals(byteArray, bytesValue);
+    }
 
 
+    @Test
+    public void recombinationTypeDecoderTest() throws Exception {
 
+        CouponWriteParamProto.CouponWriteParam couponWriteParamProto = createProtoDate();
 
+        DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(CouponWriteParam.class);
+        defaultCoderGenerate.generate();
 
+        Class<?> targetType = defaultCoderGenerate.getTargetType();
+        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class);
+        declaredConstructor.setAccessible(true);
+        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache());
+        byte[] byteArray = couponWriteParamProto.toByteArray();
+
+        CodedInputStream codedOutputStream = CodedInputStream.newInstance(byteArray);
+        Object decoder = coder.decoder(CouponWriteParam.class, codedOutputStream, ExtensionRegistryLite.getEmptyRegistry());
+        System.out.println(decoder);
 
     }
 

@@ -101,4 +101,28 @@ public class CouponDetail {
     public void setSourceBuID(Integer sourceBuID) {
         this.sourceBuID = sourceBuID;
     }
+
+    @Override
+    public String toString() {
+        return "CouponDetail{" +
+                "couponId='" + couponId + '\'' +
+                ", pwdKey='" + pwdKey + '\'' +
+                ", pin='" + pin + '\'' +
+                ", batchId=" + batchId +
+                ", couponType=" + couponType +
+                ", couponStyle=" + couponStyle +
+                ", couponState=" + couponState +
+                ", orderId=" + orderId +
+                ", bizId='" + bizId + '\'' +
+                ", visible=" + visible +
+                ", orgType='" + orgType + '\'' +
+                ", batchOrgType='" + batchOrgType + '\'' +
+                ", ext='" + ext + '\'' +
+                ", buID=" + buID +
+                ", tenantId=" + tenantId +
+                ", bizExt='" + bizExt + '\'' +
+                ", opCaller='" + opCaller + '\'' +
+                ", sourceBuID=" + sourceBuID +
+                '}';
+    }
 }

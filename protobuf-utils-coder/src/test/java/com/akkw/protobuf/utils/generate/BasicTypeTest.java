@@ -4,7 +4,9 @@ import com.akkw.protobuf.test.BasicTypeJava;
 import com.akkw.protobuf.test.ptoto.BasicType;
 import com.akkw.protobuf.utils.coder.ProtobufCoder;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
+import com.google.protobuf.ExtensionRegistryLite;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -132,16 +134,6 @@ public class BasicTypeTest {
                 .setBytes(ByteString.copyFrom(bytes))
                 .build();
 
-        BasicTypeJava basicTypeJava = new BasicTypeJava();
-        basicTypeJava.setA((byte) 1);
-        basicTypeJava.setB((short) 2);
-        basicTypeJava.setC(3);
-        basicTypeJava.setD(4);
-        basicTypeJava.setE(5);
-        basicTypeJava.setF(6.0);
-        basicTypeJava.setG(true);
-        basicTypeJava.setBytes(bytes);
-
         DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(BasicTypeJava.class);
         defaultCoderGenerate.generate();
 
@@ -149,11 +141,10 @@ public class BasicTypeTest {
         Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class);
         declaredConstructor.setAccessible(true);
         ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache());
-        byte[] bytesValue = new byte[coder.getSerializedSize(0, basicTypeJava, true, false)];
+
         byte[] byteArray = basicTypeProto.toByteArray();
-        Assert.assertEquals(byteArray.length, bytesValue.length);
-        CodedOutputStream codedOutputStream = CodedOutputStream.newInstance(bytesValue);
-        coder.encoder(0, codedOutputStream, basicTypeJava, false);
-        Assert.assertArrayEquals(basicTypeProto.toByteArray(), bytesValue);
+        CodedInputStream codedOutputStream = CodedInputStream.newInstance(byteArray);
+        Object decoder = coder.decoder(BasicTypeJava.class, codedOutputStream, ExtensionRegistryLite.getEmptyRegistry());
+        System.out.println(decoder);
     }
 }

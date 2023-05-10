@@ -72,11 +72,14 @@ public class DefaultCoderGenerate implements GenerateCoder {
         addSerializedSizeBody();
         addEncoderMethodBody();
         addDecoderMethodBody();
+        ctClass.writeFile("/Users/qiangzhiwei/code/java/protobuf-utils/protobuf-utils-coder/src/main/resources");
         tragetType = ctClass.toClass();
     }
 
-    private void addDecoderMethodBody() {
-
+    private void addDecoderMethodBody() throws CannotCompileException {
+        String decoderCode = generateDecoderBody();
+        CtMethod encoder = CtMethod.make(decoderCode, ctClass);
+        ctClass.addMethod(encoder);
     }
 
     private void paresFields() throws Exception {
@@ -96,7 +99,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
         ctClass.addConstructor(ctConstructor);
     }
 
-    private String generateConstructorNameBody(){
+    private String generateConstructorNameBody() {
         return "{\n" +
                 "this.coderCache = $1;\n" +
                 "}";
@@ -156,15 +159,23 @@ public class DefaultCoderGenerate implements GenerateCoder {
 
     private String invokeDecoderMethod() {
         StringBuilder builder = new StringBuilder();
-        Field[] declaredFields = sourceType.getDeclaredFields();
-        for (Field field : declaredFields) {
-            builder.append(String.format("%s.decoder(type, input, extensionRegistry);\n", field.getName() + "Coder"));
-        }
+        builder.append("Object object = type.newInstance();\n");
+        builder.append("java.lang.reflect.Field[] declaredFields = type.getDeclaredFields();\n");
+        builder.append("for (int i = 1; i < declaredFields.length + 1; i ++) {\n");
+        builder.append("java.lang.reflect.Field field = declaredFields[i - 1];\n");
+        builder.append("Class type = field.getType();\n");
+        builder.append("input.readTag();\n");
+        builder.append("java.lang.Number result = ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(type)).decoder(type, input, extensionRegistry);\n");
+        builder.append("field.setAccessible(true);\n");
+        builder.append("field.set(object, result);\n");
+        builder.append("}\n");
         return builder.toString();
     }
 
+
+
     private String decoderReturnStatement() {
-        return "return null;";
+        return "return object;";
     }
 
     private String generateEncoderBody() throws CannotCompileException {

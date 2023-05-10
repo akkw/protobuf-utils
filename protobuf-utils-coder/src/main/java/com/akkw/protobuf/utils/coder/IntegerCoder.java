@@ -9,8 +9,14 @@ import java.io.IOException;
 public class IntegerCoder implements ProtobufCoder {
 
     @Override
-    public Object decoder(Class type, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException {
-        return input.readInt32();
+    public Object decoder(Class<?> type, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException {
+        Object o = input.readInt32();
+        if (type.isAssignableFrom(byte.class) || type.isAssignableFrom(Byte.class)) {
+            o = Byte.valueOf(String.valueOf(o));
+        } else if (type.isAssignableFrom(Short.class) || type.isAssignableFrom(short.class)) {
+            o = Short.valueOf(String.valueOf(o));
+        }
+        return o;
     }
 
     @Override

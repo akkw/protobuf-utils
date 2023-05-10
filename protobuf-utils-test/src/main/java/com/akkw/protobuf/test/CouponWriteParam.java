@@ -39,4 +39,14 @@ public class CouponWriteParam {
     public void setExtMap(Map<String, String> extMap) {
         this.extMap = extMap;
     }
+
+    @Override
+    public String toString() {
+        return "CouponWriteParam{" +
+                "couponInfoList=" + couponInfoList +
+                ", couponDetailInfoList=" + couponDetailInfoList +
+                ", invokeSource='" + invokeSource + '\'' +
+                ", extMap=" + extMap +
+                '}';
+    }
 }

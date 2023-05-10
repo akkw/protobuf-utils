@@ -159,4 +159,29 @@ public class Coupon {
     public void setCouponDetail(CouponDetail couponDetail) {
         this.couponDetail = couponDetail;
     }
+
+    @Override
+    public String toString() {
+        return "Coupon{" +
+                "couponId='" + couponId + '\'' +
+                ", pwdKey='" + pwdKey + '\'' +
+                ", pin='" + pin + '\'' +
+                ", batchId=" + batchId +
+                ", couponType=" + couponType +
+                ", couponStyle=" + couponStyle +
+                ", couponState=" + couponState +
+                ", orderId=" + orderId +
+                ", bizId='" + bizId + '\'' +
+                ", visible=" + visible +
+                ", orgType='" + orgType + '\'' +
+                ", batchOrgType='" + batchOrgType + '\'' +
+                ", ext='" + ext + '\'' +
+                ", buID=" + buID +
+                ", tenantId=" + tenantId +
+                ", bizExt='" + bizExt + '\'' +
+                ", opCaller='" + opCaller + '\'' +
+                ", sourceBuID=" + sourceBuID +
+                ", couponDetail=" + couponDetail +
+                '}';
+    }
 }

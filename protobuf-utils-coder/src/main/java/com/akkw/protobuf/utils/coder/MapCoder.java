@@ -27,15 +27,7 @@ public class MapCoder implements ProtobufCoder {
 
     @Override
     public void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean writeTag, boolean isList) throws IOException {
-        Map<?, ?> map = (Map<?,?>) o;
-        for (Map.Entry<?, ?> entry : map.entrySet()) {
-            output.writeTag(fieldNumber, WireFormat.WIRETYPE_LENGTH_DELIMITED);
-            output.writeUInt32NoTag(getSerializedSize(fieldNumber, entry));
-            writeValue(entry.getKey(), 1, output);
-            writeValue(entry.getValue(), 2, output);
-        }
-
-
+        encoder(fieldNumber, output, o, isList);
     }
 
     private void writeValue(Object o, int number, CodedOutputStream output) throws IOException {
@@ -47,7 +39,13 @@ public class MapCoder implements ProtobufCoder {
 
     @Override
     public void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean isList) throws IOException {
-
+        Map<?, ?> map = (Map<?,?>) o;
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            output.writeTag(fieldNumber, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+            output.writeUInt32NoTag(getSerializedSize(fieldNumber, entry));
+            writeValue(entry.getKey(), 1, output);
+            writeValue(entry.getValue(), 2, output);
+        }
     }
 
     @Override
