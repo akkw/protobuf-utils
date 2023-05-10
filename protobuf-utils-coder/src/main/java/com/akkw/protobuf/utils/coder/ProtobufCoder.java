@@ -8,7 +8,7 @@ import com.google.protobuf.ExtensionRegistryLite;
 import java.io.IOException;
 
 public interface ProtobufCoder {
-    Object decoder(Class<?> type, CodedInputStream input, ExtensionRegistryLite extensionRegistry);
+    Object decoder(Class<?> type, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException;
 
     default void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean writeTag, boolean isList) throws IOException {
         if (writeTag &&  o != null && !DefaultCoderGenerate.basicType.contains(o.getClass())) {

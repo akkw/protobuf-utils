@@ -9,8 +9,8 @@ import java.io.IOException;
 public class IntegerCoder implements ProtobufCoder {
 
     @Override
-    public Object decoder(Class type, CodedInputStream input, ExtensionRegistryLite extensionRegistry) {
-        return null;
+    public Object decoder(Class type, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException {
+        return input.readInt32();
     }
 
     @Override

@@ -10,8 +10,8 @@ import java.io.IOException;
 public class StringCoder implements ProtobufCoder {
 
     @Override
-    public Object decoder(Class type, CodedInputStream input, ExtensionRegistryLite extensionRegistry) {
-        return null;
+    public Object decoder(Class<?> type, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException {
+        return input.readStringRequireUtf8();
     }
 
     @Override

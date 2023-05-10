@@ -18,7 +18,7 @@ public class BasicTypeTest {
 
 
     @Test
-    public void basicTypeTest() throws Exception {
+    public void basicTypeEncoderTest() throws Exception {
         BasicType.BasicTypeProto basicTypeProto = BasicType.BasicTypeProto.newBuilder()
                 .setA(1)
                 .setB(2)
@@ -58,7 +58,7 @@ public class BasicTypeTest {
 
 
     @Test
-    public void basicTypeTestDefault() throws Exception {
+    public void basicTypeEncoderTestDefault() throws Exception {
         BasicType.BasicTypeProto basicTypeProto = BasicType.BasicTypeProto.newBuilder()
                 .setA(0)
                 .setB(0)
@@ -95,11 +95,53 @@ public class BasicTypeTest {
 
 
     @Test
-    public void basicTypeTestEmpty() throws Exception {
+    public void basicTypeEncoderTestEmpty() throws Exception {
         BasicType.BasicTypeProto basicTypeProto = BasicType.BasicTypeProto.newBuilder()
                 .build();
 
         BasicTypeJava basicTypeJava = new BasicTypeJava();
+        DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(BasicTypeJava.class);
+        defaultCoderGenerate.generate();
+
+        Class<?> targetType = defaultCoderGenerate.getTargetType();
+        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class);
+        declaredConstructor.setAccessible(true);
+        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache());
+        byte[] bytesValue = new byte[coder.getSerializedSize(0, basicTypeJava, true, false)];
+        byte[] byteArray = basicTypeProto.toByteArray();
+        Assert.assertEquals(byteArray.length, bytesValue.length);
+        CodedOutputStream codedOutputStream = CodedOutputStream.newInstance(bytesValue);
+        coder.encoder(0, codedOutputStream, basicTypeJava, false);
+        Assert.assertArrayEquals(basicTypeProto.toByteArray(), bytesValue);
+    }
+
+
+
+
+
+    @Test
+    public void basicTypeDecoderTest() throws Exception {
+        BasicType.BasicTypeProto basicTypeProto = BasicType.BasicTypeProto.newBuilder()
+                .setA(1)
+                .setB(2)
+                .setC(3)
+                .setD(4)
+                .setE(5)
+                .setF(6.0)
+                .setG(true)
+                .setBytes(ByteString.copyFrom(bytes))
+                .build();
+
+        BasicTypeJava basicTypeJava = new BasicTypeJava();
+        basicTypeJava.setA((byte) 1);
+        basicTypeJava.setB((short) 2);
+        basicTypeJava.setC(3);
+        basicTypeJava.setD(4);
+        basicTypeJava.setE(5);
+        basicTypeJava.setF(6.0);
+        basicTypeJava.setG(true);
+        basicTypeJava.setBytes(bytes);
+
         DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(BasicTypeJava.class);
         defaultCoderGenerate.generate();
 
