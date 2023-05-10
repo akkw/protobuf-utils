@@ -1,0 +1,55 @@
+//使用 proto3 语法 ,未指定则使用proto2
+syntax = "proto3";
+
+// proto 文件包名
+package com.akkw.protobuf.test.ptoto;
+
+//生成 proto 文件所在包路径，一般来说是和文件包名一致就可以
+option java_package = "com.akkw.protobuf.test.ptoto";
+
+//生成 proto 的文件名
+option java_outer_classname="CouponProto";
+
+//创建一个 User 对象
+message Coupon {
+  string couponId = 1;
+  string pwdKey = 2;
+  string pin = 3;
+  int64 batchId = 4;
+  int32 couponType = 5;
+  int32 couponStyle = 6;
+  int32 couponState = 7;
+  int64 orderId = 8;
+  string bizId = 9;
+  int32 visible = 10;
+  string orgType = 11;
+  string batchOrgType = 12;
+  string ext = 13;
+  int32 buID = 14;
+  int32 tenantId = 15;
+  string bizExt = 16;
+  string opCaller = 17;
+  int32 sourceBuId = 18;
+  CouponDetail couponDetail = 19;
+}
+
+message CouponDetail {
+  string couponId = 1;
+  string pwdKey = 2;
+  string pin = 3;
+  int64 batchId = 4;
+  int32 couponType = 5;
+  int32 couponStyle = 6;
+  int32 couponState = 7;
+  int64 orderId = 8;
+  string bizId = 9;
+  int32 visible = 10;
+  string orgType = 11;
+  string batchOrgType = 12;
+  string ext = 13;
+  int32 buID = 14;
+  int32 tenantId = 15;
+  string bizExt = 16;
+  string opCaller = 17;
+  int32 sourceBuID = 18;
+}

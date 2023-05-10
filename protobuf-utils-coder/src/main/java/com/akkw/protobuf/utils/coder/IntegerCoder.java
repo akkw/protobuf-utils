@@ -15,14 +15,16 @@ public class IntegerCoder implements ProtobufCoder {
 
     @Override
     public void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean isList) throws IOException {
-        if ((int) o != 0) {
-            output.writeInt32(fieldNumber, (int) o);
+        Number number = (Number) o;
+        if (number.intValue() != 0) {
+            output.writeInt32(fieldNumber, number.intValue());
         }
     }
 
     @Override
     public int getSerializedSize(int fieldNumber, Object o, boolean writeTag, boolean isList) {
-        return (int) o != 0 ? com.google.protobuf.CodedOutputStream
-                .computeInt32Size(fieldNumber, (int) o) : 0;
+        Number number = (Number) o;
+        return number.intValue() != 0 ? com.google.protobuf.CodedOutputStream
+                .computeInt32Size(fieldNumber, number.intValue()) : 0;
     }
 }
