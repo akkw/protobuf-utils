@@ -5,11 +5,23 @@ import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.ExtensionRegistryLite;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BooleanCoder implements ProtobufCoder {
+
+    private static final Map<Type, ProtobufCoder> coderCache = new ConcurrentHashMap<>();
+
     @Override
-    public Object decoder(Class type, CodedInputStream input, ExtensionRegistryLite extensionRegistry) {
-        return null;
+    public Object decoder(Class<?> aClass, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException {
+        return input.readBool();
+    }
+
+    @Override
+    public Object decoder(int fieldNumber, Field field, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException {
+        return input.readBool();
     }
 
     @Override

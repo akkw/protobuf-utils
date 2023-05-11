@@ -11,17 +11,11 @@ public class CouponDetail {
     private Long batchId;
     private Integer couponType;
     private Integer couponStyle;
-    //        private BigDecimal discount;
-//        private BigDecimal quota;
-//        private Date beginTime;
-//        private Date endTime;
     private Integer couponState;
     private Long orderId;
-    //        private Date useTime;
     private String bizId;
     private Integer visible;
     private String orgType;
-    private String batchOrgType;
     private String ext;
     private Integer buID;
     private Integer tenantId;
@@ -74,9 +68,6 @@ public class CouponDetail {
         this.orgType = orgType;
     }
 
-    public void setBatchOrgType(String batchOrgType) {
-        this.batchOrgType = batchOrgType;
-    }
 
     public void setExt(String ext) {
         this.ext = ext;
@@ -100,5 +91,28 @@ public class CouponDetail {
 
     public void setSourceBuID(Integer sourceBuID) {
         this.sourceBuID = sourceBuID;
+    }
+
+    @Override
+    public String toString() {
+        return "CouponDetail{" +
+                "couponId='" + couponId + '\'' +
+                ", pwdKey='" + pwdKey + '\'' +
+                ", pin='" + pin + '\'' +
+                ", batchId=" + batchId +
+                ", couponType=" + couponType +
+                ", couponStyle=" + couponStyle +
+                ", couponState=" + couponState +
+                ", orderId=" + orderId +
+                ", bizId='" + bizId + '\'' +
+                ", visible=" + visible +
+                ", orgType='" + orgType + '\'' +
+                ", ext='" + ext + '\'' +
+                ", buID=" + buID +
+                ", tenantId=" + tenantId +
+                ", bizExt='" + bizExt + '\'' +
+                ", opCaller='" + opCaller + '\'' +
+                ", sourceBuID=" + sourceBuID +
+                '}';
     }
 }

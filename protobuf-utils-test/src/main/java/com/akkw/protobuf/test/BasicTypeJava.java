@@ -1,5 +1,7 @@
 package com.akkw.protobuf.test;
 
+import java.util.Arrays;
+
 public class BasicTypeJava {
     byte a;
 
@@ -46,5 +48,19 @@ public class BasicTypeJava {
 
     public void setBytes(byte[] bytes) {
         this.bytes = bytes;
+    }
+
+    @Override
+    public String toString() {
+        return "BasicTypeJava{" +
+                "a=" + a +
+                ", b=" + b +
+                ", c=" + c +
+                ", d=" + d +
+                ", e=" + e +
+                ", f=" + f +
+                ", g=" + g +
+                ", bytes=" + Arrays.toString(bytes) +
+                '}';
     }
 }

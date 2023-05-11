@@ -4,14 +4,16 @@ import com.akkw.protobuf.utils.generate.DefaultCoderGenerate;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.ExtensionRegistryLite;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
 public class ListCoder implements ProtobufCoder {
-
     private Map<Type, ProtobufCoder> coderCache;
 
     public ListCoder(Map<Type, ProtobufCoder> coderCache) {
@@ -23,12 +25,17 @@ public class ListCoder implements ProtobufCoder {
         return null;
     }
 
+    @Override
+    public Object decoder(int fieldNumber, Field field, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException {
+        return null;
+    }
+
 
     @Override
     public void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean writeTag, boolean isList) throws IOException {
         List<?> list = (List<?>) o;
         for (Object item : list) {
-            if (writeTag && !DefaultCoderGenerate.basicType.contains(item.getClass())) {
+            if (writeTag && !ProtobufCoderUtils.basicType.contains(item.getClass())) {
                 output.writeTag(fieldNumber, com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED);
                 int size = getSerializedSize(0, item, false, true);
                 output.writeUInt32NoTag(size);
@@ -50,7 +57,7 @@ public class ListCoder implements ProtobufCoder {
 
             for (Object item : list) {
                 size += coderCache.get(item.getClass()).getSerializedSize(fieldNumber, item, false, true);
-                if (DefaultCoderGenerate.basicType.contains(item.getClass())) {
+                if (ProtobufCoderUtils.basicType.contains(item.getClass())) {
                     size += 1;
                 }
             }

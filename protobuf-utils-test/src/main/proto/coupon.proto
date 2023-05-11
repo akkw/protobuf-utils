@@ -45,11 +45,10 @@ message CouponDetail {
   string bizId = 9;
   int32 visible = 10;
   string orgType = 11;
-  string batchOrgType = 12;
-  string ext = 13;
-  int32 buID = 14;
-  int32 tenantId = 15;
-  string bizExt = 16;
-  string opCaller = 17;
-  int32 sourceBuID = 18;
+  string ext = 12;
+  int32 buID = 13;
+  int32 tenantId = 14;
+  string bizExt = 15;
+  string opCaller = 16;
+  int32 sourceBuID = 17;
 }
