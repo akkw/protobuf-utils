@@ -74,7 +74,7 @@ public class MapTest {
                 .setBizExt("bizExt")
                 .setOpCaller("caller")
                 .setSourceBuId(123)
-                .setCouponDetail(createCouponDetailProtoDate())
+//                .setCouponDetail(createCouponDetailProtoDate())
                 .build();
         return coupon;
     }

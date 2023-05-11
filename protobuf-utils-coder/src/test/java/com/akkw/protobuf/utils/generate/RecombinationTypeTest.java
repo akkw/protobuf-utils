@@ -26,9 +26,9 @@ public class RecombinationTypeTest {
         defaultCoderGenerate.generate();
 
         Class<?> targetType = defaultCoderGenerate.getTargetType();
-        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class);
+        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class, Set.class);
         declaredConstructor.setAccessible(true);
-        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache());
+        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache(), DefaultCoderGenerate.basicType);
         byte[] bytesValue = new byte[coder.getSerializedSize(0, couponWriteParam, true, false)];
         byte[] byteArray = couponWriteParamProto.toByteArray();
         Assert.assertEquals(byteArray.length, bytesValue.length);
@@ -83,7 +83,7 @@ public class RecombinationTypeTest {
         coupon1.setSourceBuID(123);
 
         CouponDetail couponDetail1 = new CouponDetail();
-        couponDetail1.setCouponId("couponId1");
+        couponDetail1.setCouponId("couponDetailId1");
         couponDetail1.setPwdKey("pwdKey1");
         couponDetail1.setPin("zxcasdqweasdz");
         couponDetail1.setBatchId(1234567123123L);
@@ -101,7 +101,7 @@ public class RecombinationTypeTest {
         couponDetail1.setOpCaller("caller");
         couponDetail1.setSourceBuID(123);
 
-        coupon1.setCouponDetail(couponDetail1);
+//        coupon1.setCouponDetail(couponDetail1);
 
         List<CouponDetail> couponDetails = new ArrayList<>();
         couponDetails.add(couponDetail1);
@@ -109,9 +109,11 @@ public class RecombinationTypeTest {
         ArrayList<Coupon> coupons = new ArrayList<>();
         coupons.add(coupon1);
         coupons.add(coupon1);
+        coupons.add(coupon1);
 
         couponWriteParam.setCouponDetailInfoList(couponDetails);
         couponWriteParam.setCouponInfoList(coupons);
+        couponWriteParam.setInvokeSource("1coupon");
         Map<String, String> map = new LinkedHashMap<>();
         map.put("12345", "adasd");
         map.put("123456", "qwezxc");
@@ -161,7 +163,8 @@ public class RecombinationTypeTest {
                 .setBizExt("bizExt")
                 .setOpCaller("caller")
                 .setSourceBuId(123)
-                .setCouponDetail(couponDetail).build();
+//                .setCouponDetail(couponDetail)
+                .build();
 
         couponWriteParam.addCouponDetailInfoList(couponDetail);
         couponWriteParam.addCouponDetailInfoList(couponDetail);
