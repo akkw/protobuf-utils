@@ -13,9 +13,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultCoderGenerate implements GenerateCoder {
 
-    public final static Set<Type> basicType = new HashSet<>();
+    private final Set<Type> collectionType;
 
-    public final static Set<Type> collectionType = new HashSet<>();
+    private final  Set<Type> basicType;
+
+    private final Map<Type, ProtobufCoder> coderCache;
 
     private final Class<?> sourceType;
 
@@ -25,46 +27,20 @@ public class DefaultCoderGenerate implements GenerateCoder {
 
     private final ClassPool classPool = ClassPool.getDefault();
 
-    private static final Map<Type, ProtobufCoder> coderCache = new ConcurrentHashMap<>();
 
 
-    static {
-        basicType.add(Byte.class);
-        basicType.add(byte.class);
-        basicType.add(Short.class);
-        basicType.add(short.class);
-        basicType.add(Integer.class);
-        basicType.add(int.class);
-        basicType.add(Long.class);
-        basicType.add(long.class);
-        basicType.add(Float.class);
-        basicType.add(float.class);
-        basicType.add(Double.class);
-        basicType.add(double.class);
-        basicType.add(Boolean.class);
-        basicType.add(boolean.class);
-        basicType.add(String.class);
-        basicType.add(char.class);
-        basicType.add(byte[].class);
-        collectionType.add(List.class);
-        collectionType.add(ArrayList.class);
-        collectionType.add(LinkedList.class);
-        collectionType.add(Map.class);
-        collectionType.add(HashMap.class);
-        collectionType.add(LinkedHashMap.class);
-    }
 
-    public DefaultCoderGenerate(Class<?> sourceType) {
+
+    public DefaultCoderGenerate(Set<Type> collectionType, Set<Type> basicType, Map<Type, ProtobufCoder> coderCache,
+                                Class<?> sourceType) {
+        this.collectionType = collectionType;
+        this.basicType = basicType;
+        this.coderCache = coderCache;
         this.sourceType = sourceType;
     }
 
-    public Map<Type, ProtobufCoder> getCoderCache() {
-        return coderCache;
-    }
-
-
     @Override
-    public void generate() throws Exception {
+    public Class<?> generate() throws Exception {
         ctClass = classPool.makeClass(className(sourceType));
         addCoderInterface();
         addCoderCache();
@@ -73,8 +49,16 @@ public class DefaultCoderGenerate implements GenerateCoder {
         addSerializedSizeBody();
         addEncoderMethodBody();
         addDecoderMethodBody();
-        ctClass.writeFile("/Users/qiangzhiwei/code/java/protobuf-utils/protobuf-utils-coder/src/main/resources");
-        tragetType = ctClass.toClass();
+        return toClass();
+    }
+
+    private Class<?> toClass() throws CannotCompileException {
+        synchronized (coderCache) {
+            if (!coderCache.containsKey(sourceType)) {
+                tragetType = ctClass.toClass();
+            }
+        }
+        return tragetType;
     }
 
     private void addDecoderMethodBody() throws CannotCompileException {
@@ -185,6 +169,18 @@ public class DefaultCoderGenerate implements GenerateCoder {
         builder.append("result = ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(actualTypeArguments)).decoder((Class)actualTypeArguments, input, extensionRegistry);\n");
         builder.append("list.add(result);\n");
         builder.append("input.popLimit(oldLimit);\n");
+        builder.append("} else if(type.isAssignableFrom(java.util.Map.class) || type.isAssignableFrom(java.util.HashMap.class) || type.isAssignableFrom(java.util.LinkedHashMap.class)) {\n");
+        builder.append("field.setAccessible(true);\n");
+        builder.append("if (field.get(object) == null) {\n");
+        builder.append("field.set(object, new java.util.LinkedHashMap() );\n");
+        builder.append("}\n");
+        builder.append("final int length = input.readRawVarint32();\n");
+        builder.append("int oldLimit = input.pushLimit(length);\n");
+        builder.append("result = ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(type)).decoder(fieldNumber, field, input, extensionRegistry);\n");
+        builder.append("java.util.Map.Entry entry = (java.util.Map.Entry)result;\n");
+        builder.append("java.util.Map map = (java.util.Map)field.get(object);\n");
+        builder.append("map.put(entry.getKey(), entry.getValue());\n");
+        builder.append("input.popLimit(oldLimit);\n");
         builder.append("} else {\n");
         builder.append("boolean basic = basicType.contains(type);\n");
         builder.append("final int oldLimit = 0;");
@@ -282,7 +278,7 @@ public class DefaultCoderGenerate implements GenerateCoder {
 
     private void paresRecombinationType(Class<?> aClass) throws Exception {
         if (!coderCache.containsKey(aClass)) {
-            DefaultCoderGenerate generate = new DefaultCoderGenerate(aClass);
+            DefaultCoderGenerate generate = new DefaultCoderGenerate(collectionType, basicType, coderCache, aClass);
             generate.generate();
             Class<?> recombinationCtClass = generate.getTargetType();
             Constructor<?> constructor = recombinationCtClass.getDeclaredConstructors()[0];

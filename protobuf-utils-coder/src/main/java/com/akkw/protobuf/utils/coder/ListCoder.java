@@ -35,7 +35,7 @@ public class ListCoder implements ProtobufCoder {
     public void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean writeTag, boolean isList) throws IOException {
         List<?> list = (List<?>) o;
         for (Object item : list) {
-            if (writeTag && !DefaultCoderGenerate.basicType.contains(item.getClass())) {
+            if (writeTag && !ProtobufCoderUtils.basicType.contains(item.getClass())) {
                 output.writeTag(fieldNumber, com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED);
                 int size = getSerializedSize(0, item, false, true);
                 output.writeUInt32NoTag(size);
@@ -57,7 +57,7 @@ public class ListCoder implements ProtobufCoder {
 
             for (Object item : list) {
                 size += coderCache.get(item.getClass()).getSerializedSize(fieldNumber, item, false, true);
-                if (DefaultCoderGenerate.basicType.contains(item.getClass())) {
+                if (ProtobufCoderUtils.basicType.contains(item.getClass())) {
                     size += 1;
                 }
             }

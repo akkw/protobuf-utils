@@ -9,8 +9,6 @@ public class CouponWriteParamExample {
     public static void main(String[] args) throws InvalidProtocolBufferException {
         CouponWriteParamProto.CouponWriteParam protoDate = createProtoDate();
         byte[] byteArray = protoDate.toByteArray();
-
-
         CouponWriteParamProto.CouponWriteParam couponWriteParam = CouponWriteParamProto.CouponWriteParam.parseFrom(byteArray);
     }
 
