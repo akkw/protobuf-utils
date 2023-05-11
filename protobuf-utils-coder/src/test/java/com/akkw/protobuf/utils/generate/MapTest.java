@@ -8,9 +8,11 @@ import com.akkw.protobuf.test.ptoto.CouponProto;
 import com.akkw.protobuf.test.ptoto.CouponWriteParamProto;
 import com.akkw.protobuf.test.ptoto.MapExampleProto;
 import com.akkw.protobuf.utils.coder.ProtobufCoder;
+import com.akkw.protobuf.utils.coder.ProtobufCoderUtils;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.ExtensionRegistryLite;
 import com.google.protobuf.InvalidProtocolBufferException;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.lang.reflect.Constructor;
@@ -23,35 +25,24 @@ public class MapTest {
     public void test() throws Exception {
         MapExampleProto.MapExample mapExample = MapExampleProto.MapExample.newBuilder().
                 putStringMap("map-key1", "map-value1")
-//        mapExample.putStringMap("map-key2", "map-value2");
-//        mapExample.putStringMap("map-key3", "map-value3");
-//        mapExample.putStringMap("map-key4", "map-value4");
-//        mapExample.putStringMap("map-key5", "map-value5");
-                .putCouponMap("coupon1",createCouponProtoDate())
-//        mapExample.putCouponMap("coupon2",createCouponProtoDate());
-//        mapExample.putCouponMap("coupon3",createCouponProtoDate());
-                .putCouponDetail("couponDetail1",createCouponDetailProtoDate())
-//        mapExample.putCouponDetail("couponDetail2",createCouponDetailProtoDate());
-//        mapExample.putCouponDetail("couponDetail3",createCouponDetailProtoDate());
-//        mapExample.putCouponDetail("couponDetail4",createCouponDetailProtoDate());
+                .putStringMap("map-key2", "map-value2")
+                .putStringMap("map-key3", "map-value3")
+                .putStringMap("map-key4", "map-value4")
+                .putStringMap("map-key5", "map-value5")
+                .putCouponMap("coupon1", createCouponProtoDate())
+                .putCouponMap("coupon2", createCouponProtoDate())
+                .putCouponMap("coupon3", createCouponProtoDate())
+                .putCouponDetail("couponDetail1", createCouponDetailProtoDate())
+                .putCouponDetail("couponDetail2", createCouponDetailProtoDate())
+                .putCouponDetail("couponDetail3", createCouponDetailProtoDate())
+                .putCouponDetail("couponDetail4", createCouponDetailProtoDate())
                 .build();
 
         byte[] byteArray = mapExample.toByteArray();
+//        ProtobufCoderUtils.parseJavaClass(MapExampleJava.class);
+        Assert.assertNotNull(ProtobufCoderUtils.decoder(byteArray, MapExampleJava.class));
 
-        DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(MapExampleJava.class);
-        defaultCoderGenerate.generate();
-
-        Class<?> targetType = defaultCoderGenerate.getTargetType();
-        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class, Set.class);
-        declaredConstructor.setAccessible(true);
-        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache(), DefaultCoderGenerate.basicType);
-
-        CodedInputStream codedOutputStream = CodedInputStream.newInstance(byteArray);
-        Object decoder = coder.decoder(MapExampleJava.class, codedOutputStream, ExtensionRegistryLite.getEmptyRegistry());
-        System.out.println(decoder);
     }
-
-
 
 
     private static CouponProto.Coupon createCouponProtoDate() {

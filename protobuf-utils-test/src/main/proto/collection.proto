@@ -1,0 +1,26 @@
+//使用 proto3 语法 ,未指定则使用proto2
+syntax = "proto3";
+
+// proto 文件包名
+package com.akkw.protobuf.test.ptoto;
+
+//生成 proto 文件所在包路径，一般来说是和文件包名一致就可以
+option java_package = "com.akkw.protobuf.test.ptoto";
+
+//生成 proto 的文件名
+option java_outer_classname="CollectionProto";
+
+
+//创建一个 User 对象
+message CollectionType {
+  repeated int64 aLong = 1;
+  repeated int32 aInt = 2;
+  repeated bool aBoolean = 3;
+  repeated string aString = 4;
+  repeated double aDouble = 5;
+  repeated float aFloat = 6;
+  map<int64, int32> intMap = 7;
+  map<bool, int32> booleanMap = 8;
+  map<int32, double> floatMap = 9;
+}
+
