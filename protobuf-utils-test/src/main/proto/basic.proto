@@ -1,0 +1,25 @@
+////使用 proto3 语法 ,未指定则使用proto2
+//syntax = "proto3";
+//
+//// proto 文件包名
+//package com.akkw.protobuf.test.ptoto;
+//
+////生成 proto 文件所在包路径，一般来说是和文件包名一致就可以
+//option java_package = "com.akkw.protobuf.test.ptoto";
+//
+////生成 proto 的文件名
+//option java_outer_classname="BasicType";
+//
+//
+////创建一个 User 对象
+//message BasicTypeProto {
+//  int32 a = 1;
+//  int32 b = 2;
+//  int32 c = 3;
+//  int64 d = 4;
+//  float e = 5;
+//  double f = 6;
+//  bool g = 7;
+//  bytes bytes = 8;
+//}
+//
