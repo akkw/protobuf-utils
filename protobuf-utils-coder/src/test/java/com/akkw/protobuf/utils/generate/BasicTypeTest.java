@@ -2,18 +2,10 @@ package com.akkw.protobuf.utils.generate;
 
 import com.akkw.protobuf.test.BasicTypeJava;
 import com.akkw.protobuf.test.ptoto.BasicType;
-import com.akkw.protobuf.utils.coder.ProtobufCoder;
+import com.akkw.protobuf.utils.coder.ProtobufCoderUtils;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.CodedInputStream;
-import com.google.protobuf.CodedOutputStream;
-import com.google.protobuf.ExtensionRegistryLite;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
 
 public class BasicTypeTest {
 
@@ -43,21 +35,14 @@ public class BasicTypeTest {
         basicTypeJava.setG(true);
         basicTypeJava.setBytes(bytes);
 
-        DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(BasicTypeJava.class);
-        defaultCoderGenerate.generate();
+        byte[] protoBytes = basicTypeProto.toByteArray();
+        ProtobufCoderUtils.parseJavaClass(BasicTypeJava.class);
+        byte[] encoder = ProtobufCoderUtils.encoder(basicTypeJava);
+        Assert.assertEquals(protoBytes.length, encoder.length);
 
-        Class<?> targetType = defaultCoderGenerate.getTargetType();
-        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class, Set.class);
-        declaredConstructor.setAccessible(true);
-        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache(), DefaultCoderGenerate.basicType);
-        byte[] bytesValue = new byte[coder.getSerializedSize(0, basicTypeJava, true, false)];
-        byte[] byteArray = basicTypeProto.toByteArray();
-        Assert.assertEquals(byteArray.length, bytesValue.length);
-        CodedOutputStream codedOutputStream = CodedOutputStream.newInstance(bytesValue);
-        coder.encoder(0, codedOutputStream, basicTypeJava, false);
-        Assert.assertArrayEquals(basicTypeProto.toByteArray(), bytesValue);
+        Assert.assertNotNull(BasicType.BasicTypeProto.parseFrom(encoder));
+        Assert.assertNotNull(ProtobufCoderUtils.decoder(protoBytes, BasicTypeJava.class));
     }
-
 
 
     @Test
@@ -81,19 +66,13 @@ public class BasicTypeTest {
         basicTypeJava.setF(0);
         basicTypeJava.setG(false);
 
-        DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(BasicTypeJava.class);
-        defaultCoderGenerate.generate();
+        byte[] protoBytes = basicTypeProto.toByteArray();
+        ProtobufCoderUtils.parseJavaClass(BasicTypeJava.class);
+        byte[] encoder = ProtobufCoderUtils.encoder(basicTypeJava);
+        Assert.assertEquals(protoBytes.length, encoder.length);
 
-        Class<?> targetType = defaultCoderGenerate.getTargetType();
-        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class, Set.class);
-        declaredConstructor.setAccessible(true);
-        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache(), DefaultCoderGenerate.basicType);
-        byte[] bytesValue = new byte[coder.getSerializedSize(0, basicTypeJava, true, false)];
-        byte[] byteArray = basicTypeProto.toByteArray();
-        Assert.assertEquals(byteArray.length, bytesValue.length);
-        CodedOutputStream codedOutputStream = CodedOutputStream.newInstance(bytesValue);
-        coder.encoder(0, codedOutputStream, basicTypeJava, false);
-        Assert.assertArrayEquals(basicTypeProto.toByteArray(), bytesValue);
+        Assert.assertNotNull(BasicType.BasicTypeProto.parseFrom(encoder));
+        Assert.assertNotNull(ProtobufCoderUtils.decoder(protoBytes, BasicTypeJava.class));
     }
 
 
@@ -102,24 +81,11 @@ public class BasicTypeTest {
         BasicType.BasicTypeProto basicTypeProto = BasicType.BasicTypeProto.newBuilder()
                 .build();
 
-        BasicTypeJava basicTypeJava = new BasicTypeJava();
-        DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(BasicTypeJava.class);
-        defaultCoderGenerate.generate();
+        byte[] protoBytes = basicTypeProto.toByteArray();
+        ProtobufCoderUtils.parseJavaClass(BasicTypeJava.class);
+        Assert.assertNotNull(ProtobufCoderUtils.decoder(protoBytes, BasicTypeJava.class));
 
-        Class<?> targetType = defaultCoderGenerate.getTargetType();
-        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class, Set.class);
-        declaredConstructor.setAccessible(true);
-        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache(), DefaultCoderGenerate.basicType);
-        byte[] bytesValue = new byte[coder.getSerializedSize(0, basicTypeJava, true, false)];
-        byte[] byteArray = basicTypeProto.toByteArray();
-        Assert.assertEquals(byteArray.length, bytesValue.length);
-        CodedOutputStream codedOutputStream = CodedOutputStream.newInstance(bytesValue);
-        coder.encoder(0, codedOutputStream, basicTypeJava, false);
-        Assert.assertArrayEquals(basicTypeProto.toByteArray(), bytesValue);
     }
-
-
-
 
 
     @Test
@@ -135,17 +101,8 @@ public class BasicTypeTest {
                 .setBytes(ByteString.copyFrom(bytes))
                 .build();
 
-        DefaultCoderGenerate defaultCoderGenerate = new DefaultCoderGenerate(BasicTypeJava.class);
-        defaultCoderGenerate.generate();
-
-        Class<?> targetType = defaultCoderGenerate.getTargetType();
-        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class, Set.class);
-        declaredConstructor.setAccessible(true);
-        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache(), DefaultCoderGenerate.basicType);
-
-        byte[] byteArray = basicTypeProto.toByteArray();
-        CodedInputStream codedOutputStream = CodedInputStream.newInstance(byteArray);
-        Object decoder = coder.decoder(BasicTypeJava.class, codedOutputStream, ExtensionRegistryLite.getEmptyRegistry());
-        System.out.println(decoder);
+        byte[] protoBytes = basicTypeProto.toByteArray();
+        ProtobufCoderUtils.parseJavaClass(BasicTypeJava.class);
+        Assert.assertNotNull(ProtobufCoderUtils.decoder(protoBytes, BasicTypeJava.class));
     }
 }

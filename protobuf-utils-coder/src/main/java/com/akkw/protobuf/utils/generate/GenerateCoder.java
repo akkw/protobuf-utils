@@ -5,5 +5,5 @@ import javassist.CannotCompileException;
 import java.lang.reflect.Field;
 
 public interface GenerateCoder {
-    void generate() throws Exception;
+    Class<?> generate() throws Exception;
 }
