@@ -185,6 +185,18 @@ public class DefaultCoderGenerate implements GenerateCoder {
         builder.append("result = ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(actualTypeArguments)).decoder((Class)actualTypeArguments, input, extensionRegistry);\n");
         builder.append("list.add(result);\n");
         builder.append("input.popLimit(oldLimit);\n");
+        builder.append("} else if(type.isAssignableFrom(java.util.Map.class) || type.isAssignableFrom(java.util.HashMap.class) || type.isAssignableFrom(java.util.LinkedHashMap.class)) {\n");
+        builder.append("field.setAccessible(true);\n");
+        builder.append("if (field.get(object) == null) {\n");
+        builder.append("field.set(object, new java.util.LinkedHashMap() );\n");
+        builder.append("}\n");
+        builder.append("final int length = input.readRawVarint32();\n");
+        builder.append("int oldLimit = input.pushLimit(length);\n");
+        builder.append("result = ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(type)).decoder(fieldNumber, field, input, extensionRegistry);\n");
+        builder.append("java.util.Map.Entry entry = (java.util.Map.Entry)result;\n");
+        builder.append("java.util.Map map = (java.util.Map)field.get(object);\n");
+        builder.append("map.put(entry.getKey(), entry.getValue());\n");
+        builder.append("input.popLimit(oldLimit);\n");
         builder.append("} else {\n");
         builder.append("boolean basic = basicType.contains(type);\n");
         builder.append("final int oldLimit = 0;");

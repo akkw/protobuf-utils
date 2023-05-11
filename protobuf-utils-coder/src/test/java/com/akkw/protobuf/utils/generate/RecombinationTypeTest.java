@@ -169,9 +169,9 @@ public class RecombinationTypeTest {
         couponWriteParam.addCouponInfoList(coupon);
         couponWriteParam.addCouponInfoList(coupon);
         couponWriteParam.setInvokeSource("1coupon");
-//        couponWriteParam.putExtMap("12345", "adasd");
-//        couponWriteParam.putExtMap("123456", "qwezxc");
-//        couponWriteParam.putExtMap("1234567", "asdsadf");
+        couponWriteParam.putExtMap("12345", "adasd");
+        couponWriteParam.putExtMap("123456", "qwezxc");
+        couponWriteParam.putExtMap("1234567", "asdsadf");
         return couponWriteParam.build();
     }
 }

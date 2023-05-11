@@ -8,13 +8,14 @@ package com.akkw.protobuf.test.ptoto;
 option java_package = "com.akkw.protobuf.test.ptoto";
 
 //生成 proto 的文件名
-option java_outer_classname="CouponWriteParamProto";
+option java_outer_classname="MapExampleProto";
 
 import "coupon.proto";
 //创建一个 User 对象
-message CouponWriteParam {
-  repeated Coupon couponInfoList = 1;
-  repeated CouponDetail couponDetailInfoList = 2;
-  string invokeSource = 3;
-  map<string, string> extMap = 4;
+message MapExample {
+  map<string, Coupon> couponMap = 1;
+
+  map<string, CouponDetail> couponDetail = 2;
+
+  map<string, string> stringMap = 3;
 }
