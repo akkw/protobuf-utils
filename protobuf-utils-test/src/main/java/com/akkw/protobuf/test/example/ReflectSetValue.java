@@ -15,6 +15,7 @@ public class ReflectSetValue {
         for (Field field : declaredFields) {
             field.setAccessible(true);
             field.set(basicTypeJava, (Integer) 1 );
+
         }
         byte b = 1;
         Object a = b;

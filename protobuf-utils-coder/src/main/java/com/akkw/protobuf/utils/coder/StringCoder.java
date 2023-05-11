@@ -6,11 +6,22 @@ import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.ExtensionRegistryLite;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 public class StringCoder implements ProtobufCoder {
 
     @Override
     public Object decoder(Class<?> type, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException {
+        if (type.isAssignableFrom(byte[].class)) {
+            return input.readBytes().toByteArray();
+        } else {
+            return input.readStringRequireUtf8();
+        }
+    }
+
+    @Override
+    public Object decoder(int fieldNumber, Field field, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException {
+        Class<?> type = field.getType();
         if (type.isAssignableFrom(byte[].class)) {
             return input.readBytes().toByteArray();
         } else {

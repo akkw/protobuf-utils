@@ -18,7 +18,7 @@ public class CouponWriteParamExample {
     private static CouponWriteParamProto.CouponWriteParam createProtoDate() {
         CouponWriteParamProto.CouponWriteParam.Builder couponWriteParam = CouponWriteParamProto.CouponWriteParam.newBuilder();
         CouponProto.CouponDetail couponDetail = CouponProto.CouponDetail.newBuilder()
-                .setCouponId("couponId1")
+                .setCouponId("couponDetailId1")
                 .setPwdKey("pwdKey1")
                 .setPin("zxcasdqweasdz")
                 .setBatchId(1234567123123L)

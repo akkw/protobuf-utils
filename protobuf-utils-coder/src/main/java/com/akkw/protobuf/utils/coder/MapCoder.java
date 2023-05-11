@@ -4,6 +4,7 @@ import com.google.protobuf.*;
 
 import java.io.IOException;
 import java.lang.Enum;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Map;
 
@@ -22,6 +23,11 @@ public class MapCoder implements ProtobufCoder {
 
     @Override
     public Object decoder(Class<?> type, CodedInputStream input, ExtensionRegistryLite extensionRegistry) {
+        return null;
+    }
+
+    @Override
+    public Object decoder(int fieldNumber, Field field, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException {
         return null;
     }
 

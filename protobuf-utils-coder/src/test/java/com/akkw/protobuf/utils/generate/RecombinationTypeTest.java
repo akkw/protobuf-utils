@@ -47,9 +47,9 @@ public class RecombinationTypeTest {
         defaultCoderGenerate.generate();
 
         Class<?> targetType = defaultCoderGenerate.getTargetType();
-        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class);
+        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class, Set.class);
         declaredConstructor.setAccessible(true);
-        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache());
+        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache(), DefaultCoderGenerate.basicType);
         byte[] byteArray = couponWriteParamProto.toByteArray();
 
         CodedInputStream codedOutputStream = CodedInputStream.newInstance(byteArray);
@@ -124,7 +124,7 @@ public class RecombinationTypeTest {
     private CouponWriteParamProto.CouponWriteParam createProtoDate() {
         CouponWriteParamProto.CouponWriteParam.Builder couponWriteParam = CouponWriteParamProto.CouponWriteParam.newBuilder();
         CouponProto.CouponDetail couponDetail = CouponProto.CouponDetail.newBuilder()
-                .setCouponId("couponId1")
+                .setCouponId("couponDetailId1")
                 .setPwdKey("pwdKey1")
                 .setPin("zxcasdqweasdz")
                 .setBatchId(1234567123123L)
@@ -167,9 +167,11 @@ public class RecombinationTypeTest {
         couponWriteParam.addCouponDetailInfoList(couponDetail);
         couponWriteParam.addCouponInfoList(coupon);
         couponWriteParam.addCouponInfoList(coupon);
-        couponWriteParam.putExtMap("12345", "adasd");
-        couponWriteParam.putExtMap("123456", "qwezxc");
-        couponWriteParam.putExtMap("1234567", "asdsadf");
+        couponWriteParam.addCouponInfoList(coupon);
+        couponWriteParam.setInvokeSource("1coupon");
+//        couponWriteParam.putExtMap("12345", "adasd");
+//        couponWriteParam.putExtMap("123456", "qwezxc");
+//        couponWriteParam.putExtMap("1234567", "asdsadf");
         return couponWriteParam.build();
     }
 }

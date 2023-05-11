@@ -4,14 +4,16 @@ import com.akkw.protobuf.utils.generate.DefaultCoderGenerate;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.ExtensionRegistryLite;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
 public class ListCoder implements ProtobufCoder {
-
     private Map<Type, ProtobufCoder> coderCache;
 
     public ListCoder(Map<Type, ProtobufCoder> coderCache) {
@@ -20,6 +22,11 @@ public class ListCoder implements ProtobufCoder {
 
     @Override
     public Object decoder(Class<?> type, CodedInputStream input, ExtensionRegistryLite extensionRegistry) {
+        return null;
+    }
+
+    @Override
+    public Object decoder(int fieldNumber, Field field, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException {
         return null;
     }
 

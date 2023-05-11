@@ -6,9 +6,12 @@ import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.ExtensionRegistryLite;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 public interface ProtobufCoder {
     Object decoder(Class<?> type, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException;
+
+    Object decoder(int fieldNumber, Field field, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException;
 
     default void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean writeTag, boolean isList) throws IOException {
         if (writeTag &&  o != null && !DefaultCoderGenerate.basicType.contains(o.getClass())) {
