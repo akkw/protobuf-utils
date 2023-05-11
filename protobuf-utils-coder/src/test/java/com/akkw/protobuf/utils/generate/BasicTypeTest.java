@@ -13,6 +13,7 @@ import org.junit.Test;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 
 public class BasicTypeTest {
 
@@ -46,9 +47,9 @@ public class BasicTypeTest {
         defaultCoderGenerate.generate();
 
         Class<?> targetType = defaultCoderGenerate.getTargetType();
-        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class);
+        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class, Set.class);
         declaredConstructor.setAccessible(true);
-        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache());
+        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache(), DefaultCoderGenerate.basicType);
         byte[] bytesValue = new byte[coder.getSerializedSize(0, basicTypeJava, true, false)];
         byte[] byteArray = basicTypeProto.toByteArray();
         Assert.assertEquals(byteArray.length, bytesValue.length);
@@ -84,9 +85,9 @@ public class BasicTypeTest {
         defaultCoderGenerate.generate();
 
         Class<?> targetType = defaultCoderGenerate.getTargetType();
-        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class);
+        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class, Set.class);
         declaredConstructor.setAccessible(true);
-        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache());
+        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache(), DefaultCoderGenerate.basicType);
         byte[] bytesValue = new byte[coder.getSerializedSize(0, basicTypeJava, true, false)];
         byte[] byteArray = basicTypeProto.toByteArray();
         Assert.assertEquals(byteArray.length, bytesValue.length);
@@ -106,9 +107,9 @@ public class BasicTypeTest {
         defaultCoderGenerate.generate();
 
         Class<?> targetType = defaultCoderGenerate.getTargetType();
-        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class);
+        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class, Set.class);
         declaredConstructor.setAccessible(true);
-        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache());
+        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache(), DefaultCoderGenerate.basicType);
         byte[] bytesValue = new byte[coder.getSerializedSize(0, basicTypeJava, true, false)];
         byte[] byteArray = basicTypeProto.toByteArray();
         Assert.assertEquals(byteArray.length, bytesValue.length);
@@ -138,9 +139,9 @@ public class BasicTypeTest {
         defaultCoderGenerate.generate();
 
         Class<?> targetType = defaultCoderGenerate.getTargetType();
-        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class);
+        Constructor<?> declaredConstructor = targetType.getDeclaredConstructor(Map.class, Set.class);
         declaredConstructor.setAccessible(true);
-        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache());
+        ProtobufCoder coder = (ProtobufCoder)declaredConstructor.newInstance(defaultCoderGenerate.getCoderCache(), DefaultCoderGenerate.basicType);
 
         byte[] byteArray = basicTypeProto.toByteArray();
         CodedInputStream codedOutputStream = CodedInputStream.newInstance(byteArray);
