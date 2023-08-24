@@ -3,6 +3,7 @@ package com.akkw.protobuf.utils.generate;
 import com.akkw.protobuf.utils.coder.*;
 import javassist.*;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -52,10 +53,11 @@ public class DefaultCoderGenerate implements GenerateCoder {
         return toClass();
     }
 
-    private Class<?> toClass() throws CannotCompileException {
+    private Class<?> toClass() throws CannotCompileException, NotFoundException, IOException {
         synchronized (coderCache) {
             if (!coderCache.containsKey(sourceType)) {
                 tragetType = ctClass.toClass();
+                ctClass.writeFile();
             }
         }
         return tragetType;
@@ -154,10 +156,12 @@ public class DefaultCoderGenerate implements GenerateCoder {
         builder.append("}\n");
         builder.append("java.lang.reflect.Field[] declaredFields = aClass.getDeclaredFields();\n");
         builder.append("int fieldNumber = com.google.protobuf.WireFormat.getTagFieldNumber(tag) ;\n");
+        builder.append("System.out.println(fieldNumber);\n");
         builder.append("java.lang.reflect.Field field= declaredFields[fieldNumber - 1];\n");
         builder.append("Class type = field.getType();\n");
         builder.append("Object result = null;\n");
         builder.append("if (type.isAssignableFrom(java.util.List.class) || type.isAssignableFrom(java.util.ArrayList.class) || type.isAssignableFrom(java.util.LinkedList.class)) {\n");
+        builder.append("System.out.println(111111);");
         builder.append("java.lang.reflect.Type actualTypeArguments = ((java.lang.reflect.ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];\n");
         builder.append("field.setAccessible(true);\n");
         builder.append("if (field.get(object) == null) {\n");
@@ -169,7 +173,8 @@ public class DefaultCoderGenerate implements GenerateCoder {
         builder.append("result = ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(actualTypeArguments)).decoder((Class)actualTypeArguments, input, extensionRegistry);\n");
         builder.append("list.add(result);\n");
         builder.append("input.popLimit(oldLimit);\n");
-        builder.append("} else if(type.isAssignableFrom(java.util.Map.class) || type.isAssignableFrom(java.util.HashMap.class) || type.isAssignableFrom(java.util.LinkedHashMap.class)) {\n");
+        builder.append("} else if (type.isAssignableFrom(java.util.Map.class) || type.isAssignableFrom(java.util.HashMap.class) || type.isAssignableFrom(java.util.LinkedHashMap.class)) {\n");
+        builder.append("System.out.println(22222);");
         builder.append("field.setAccessible(true);\n");
         builder.append("if (field.get(object) == null) {\n");
         builder.append("field.set(object, new java.util.LinkedHashMap() );\n");
@@ -182,16 +187,19 @@ public class DefaultCoderGenerate implements GenerateCoder {
         builder.append("map.put(entry.getKey(), entry.getValue());\n");
         builder.append("input.popLimit(oldLimit);\n");
         builder.append("} else {\n");
+        builder.append("System.out.println(33333);");
         builder.append("boolean basic = basicType.contains(type);\n");
         builder.append("final int oldLimit = 0;");
-        builder.append("if (!basic) {");
+        builder.append("System.out.println(!type.isEnum());");
+        builder.append("if (!basic && !type.isEnum()) {");
         builder.append("final int length = input.readRawVarint32();\n");
         builder.append("oldLimit = input.pushLimit(length);\n");
         builder.append("}\n");
+        builder.append("System.out.println(((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(type)));");
         builder.append("result = ((com.akkw.protobuf.utils.coder.ProtobufCoder)coderCache.get(type)).decoder(type, input, extensionRegistry);\n");
         builder.append("field.setAccessible(true);\n");
         builder.append("field.set(object, result);\n");
-        builder.append("if (!basic) {\n");
+        builder.append("if (!basic && !type.isEnum()) {\n");
         builder.append("input.popLimit(oldLimit);\n");
         builder.append("}\n");
         builder.append("}\n");
@@ -243,6 +251,8 @@ public class DefaultCoderGenerate implements GenerateCoder {
             paresBasicType(aClass);
         } else if (collectionType.contains(aClass)) {
             paresCollectionType(field);
+        } else if (aClass.isEnum()) {
+            paresEnumType(aClass);
         } else {
             paresRecombinationType(aClass);
         }
@@ -314,6 +324,9 @@ public class DefaultCoderGenerate implements GenerateCoder {
         }
     }
 
+    public void paresEnumType(Class<?> aClass) {
+        coderCache.put(aClass, new EnumCoder());
+    }
 
     private String methodClose() {
         return "}";

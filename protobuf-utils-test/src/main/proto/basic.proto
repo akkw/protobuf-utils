@@ -21,5 +21,11 @@ message BasicTypeProto {
   double f = 6;
   bool g = 7;
   bytes bytes = 8;
+  PhoneType p = 9;
+}
+
+enum PhoneType{
+  A = 0;
+  B = 1;
 }
 

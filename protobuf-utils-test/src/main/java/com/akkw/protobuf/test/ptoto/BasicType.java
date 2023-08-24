@@ -14,6 +14,114 @@ public final class BasicType {
     registerAllExtensions(
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
+  /**
+   * Protobuf enum {@code com.akkw.protobuf.test.ptoto.PhoneType}
+   */
+  public enum PhoneType
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>A = 0;</code>
+     */
+    A(0),
+    /**
+     * <code>B = 1;</code>
+     */
+    B(1),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>A = 0;</code>
+     */
+    public static final int A_VALUE = 0;
+    /**
+     * <code>B = 1;</code>
+     */
+    public static final int B_VALUE = 1;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static PhoneType valueOf(int value) {
+      return forNumber(value);
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
+    public static PhoneType forNumber(int value) {
+      switch (value) {
+        case 0: return A;
+        case 1: return B;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<PhoneType>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        PhoneType> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<PhoneType>() {
+            public PhoneType findValueByNumber(int number) {
+              return PhoneType.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return com.akkw.protobuf.test.ptoto.BasicType.getDescriptor().getEnumTypes().get(0);
+    }
+
+    private static final PhoneType[] VALUES = values();
+
+    public static PhoneType valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private PhoneType(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:com.akkw.protobuf.test.ptoto.PhoneType)
+  }
+
   public interface BasicTypeProtoOrBuilder extends
       // @@protoc_insertion_point(interface_extends:com.akkw.protobuf.test.ptoto.BasicTypeProto)
       com.google.protobuf.MessageOrBuilder {
@@ -65,6 +173,17 @@ public final class BasicType {
      * @return The bytes.
      */
     com.google.protobuf.ByteString getBytes();
+
+    /**
+     * <code>.com.akkw.protobuf.test.ptoto.PhoneType p = 9;</code>
+     * @return The enum numeric value on the wire for p.
+     */
+    int getPValue();
+    /**
+     * <code>.com.akkw.protobuf.test.ptoto.PhoneType p = 9;</code>
+     * @return The p.
+     */
+    com.akkw.protobuf.test.ptoto.BasicType.PhoneType getP();
   }
   /**
    * <pre>
@@ -84,6 +203,7 @@ public final class BasicType {
     }
     private BasicTypeProto() {
       bytes_ = com.google.protobuf.ByteString.EMPTY;
+      p_ = 0;
     }
 
     @java.lang.Override
@@ -199,6 +319,25 @@ public final class BasicType {
       return bytes_;
     }
 
+    public static final int P_FIELD_NUMBER = 9;
+    private int p_;
+    /**
+     * <code>.com.akkw.protobuf.test.ptoto.PhoneType p = 9;</code>
+     * @return The enum numeric value on the wire for p.
+     */
+    @java.lang.Override public int getPValue() {
+      return p_;
+    }
+    /**
+     * <code>.com.akkw.protobuf.test.ptoto.PhoneType p = 9;</code>
+     * @return The p.
+     */
+    @java.lang.Override public com.akkw.protobuf.test.ptoto.BasicType.PhoneType getP() {
+      @SuppressWarnings("deprecation")
+      com.akkw.protobuf.test.ptoto.BasicType.PhoneType result = com.akkw.protobuf.test.ptoto.BasicType.PhoneType.valueOf(p_);
+      return result == null ? com.akkw.protobuf.test.ptoto.BasicType.PhoneType.UNRECOGNIZED : result;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -236,6 +375,9 @@ public final class BasicType {
       }
       if (!bytes_.isEmpty()) {
         output.writeBytes(8, bytes_);
+      }
+      if (p_ != com.akkw.protobuf.test.ptoto.BasicType.PhoneType.A.getNumber()) {
+        output.writeEnum(9, p_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -278,6 +420,10 @@ public final class BasicType {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(8, bytes_);
       }
+      if (p_ != com.akkw.protobuf.test.ptoto.BasicType.PhoneType.A.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(9, p_);
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
@@ -311,6 +457,7 @@ public final class BasicType {
           != other.getG()) return false;
       if (!getBytes()
           .equals(other.getBytes())) return false;
+      if (p_ != other.p_) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -342,6 +489,8 @@ public final class BasicType {
           getG());
       hash = (37 * hash) + BYTES_FIELD_NUMBER;
       hash = (53 * hash) + getBytes().hashCode();
+      hash = (37 * hash) + P_FIELD_NUMBER;
+      hash = (53 * hash) + p_;
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -490,6 +639,8 @@ public final class BasicType {
 
         bytes_ = com.google.protobuf.ByteString.EMPTY;
 
+        p_ = 0;
+
         return this;
       }
 
@@ -524,6 +675,7 @@ public final class BasicType {
         result.f_ = f_;
         result.g_ = g_;
         result.bytes_ = bytes_;
+        result.p_ = p_;
         onBuilt();
         return result;
       }
@@ -596,6 +748,9 @@ public final class BasicType {
         if (other.getBytes() != com.google.protobuf.ByteString.EMPTY) {
           setBytes(other.getBytes());
         }
+        if (other.p_ != 0) {
+          setPValue(other.getPValue());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -662,6 +817,11 @@ public final class BasicType {
 
                 break;
               } // case 66
+              case 72: {
+                p_ = input.readEnum();
+
+                break;
+              } // case 72
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -928,6 +1088,60 @@ public final class BasicType {
         onChanged();
         return this;
       }
+
+      private int p_ = 0;
+      /**
+       * <code>.com.akkw.protobuf.test.ptoto.PhoneType p = 9;</code>
+       * @return The enum numeric value on the wire for p.
+       */
+      @java.lang.Override public int getPValue() {
+        return p_;
+      }
+      /**
+       * <code>.com.akkw.protobuf.test.ptoto.PhoneType p = 9;</code>
+       * @param value The enum numeric value on the wire for p to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPValue(int value) {
+        
+        p_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.com.akkw.protobuf.test.ptoto.PhoneType p = 9;</code>
+       * @return The p.
+       */
+      @java.lang.Override
+      public com.akkw.protobuf.test.ptoto.BasicType.PhoneType getP() {
+        @SuppressWarnings("deprecation")
+        com.akkw.protobuf.test.ptoto.BasicType.PhoneType result = com.akkw.protobuf.test.ptoto.BasicType.PhoneType.valueOf(p_);
+        return result == null ? com.akkw.protobuf.test.ptoto.BasicType.PhoneType.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.com.akkw.protobuf.test.ptoto.PhoneType p = 9;</code>
+       * @param value The p to set.
+       * @return This builder for chaining.
+       */
+      public Builder setP(com.akkw.protobuf.test.ptoto.BasicType.PhoneType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        p_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.com.akkw.protobuf.test.ptoto.PhoneType p = 9;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearP() {
+        
+        p_ = 0;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -1007,9 +1221,11 @@ public final class BasicType {
   static {
     java.lang.String[] descriptorData = {
       "\n\013basic.proto\022\034com.akkw.protobuf.test.pt" +
-      "oto\"l\n\016BasicTypeProto\022\t\n\001a\030\001 \001(\005\022\t\n\001b\030\002 " +
-      "\001(\005\022\t\n\001c\030\003 \001(\005\022\t\n\001d\030\004 \001(\003\022\t\n\001e\030\005 \001(\002\022\t\n\001" +
-      "f\030\006 \001(\001\022\t\n\001g\030\007 \001(\010\022\r\n\005bytes\030\010 \001(\014B)\n\034com" +
+      "oto\"\240\001\n\016BasicTypeProto\022\t\n\001a\030\001 \001(\005\022\t\n\001b\030\002" +
+      " \001(\005\022\t\n\001c\030\003 \001(\005\022\t\n\001d\030\004 \001(\003\022\t\n\001e\030\005 \001(\002\022\t\n" +
+      "\001f\030\006 \001(\001\022\t\n\001g\030\007 \001(\010\022\r\n\005bytes\030\010 \001(\014\0222\n\001p\030" +
+      "\t \001(\0162\'.com.akkw.protobuf.test.ptoto.Pho" +
+      "neType*\031\n\tPhoneType\022\005\n\001A\020\000\022\005\n\001B\020\001B)\n\034com" +
       ".akkw.protobuf.test.ptotoB\tBasicTypeb\006pr" +
       "oto3"
     };
@@ -1022,7 +1238,7 @@ public final class BasicType {
     internal_static_com_akkw_protobuf_test_ptoto_BasicTypeProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_akkw_protobuf_test_ptoto_BasicTypeProto_descriptor,
-        new java.lang.String[] { "A", "B", "C", "D", "E", "F", "G", "Bytes", });
+        new java.lang.String[] { "A", "B", "C", "D", "E", "F", "G", "Bytes", "P", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

@@ -7,6 +7,8 @@ import com.google.protobuf.ByteString;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static com.akkw.protobuf.test.BasicTypeJava.B.B;
+
 public class BasicTypeTest {
 
     private static final byte[] bytes = "basicTypeTest".getBytes();
@@ -23,6 +25,7 @@ public class BasicTypeTest {
                 .setF(6.0)
                 .setG(true)
                 .setBytes(ByteString.copyFrom(bytes))
+                .setP(BasicType.PhoneType.B)
                 .build();
 
         BasicTypeJava basicTypeJava = new BasicTypeJava();
@@ -34,8 +37,10 @@ public class BasicTypeTest {
         basicTypeJava.setF(6.0);
         basicTypeJava.setG(true);
         basicTypeJava.setBytes(bytes);
+        basicTypeJava.setP(BasicTypeJava.B.B);
 
         byte[] protoBytes = basicTypeProto.toByteArray();
+        BasicType.BasicTypeProto basicTypeProto1 = BasicType.BasicTypeProto.parseFrom(protoBytes);
         ProtobufCoderUtils.parseJavaClass(BasicTypeJava.class);
         byte[] encoder = ProtobufCoderUtils.encoder(basicTypeJava);
         Assert.assertEquals(protoBytes.length, encoder.length);

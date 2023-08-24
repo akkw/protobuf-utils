@@ -18,6 +18,8 @@ public class BasicTypeJava {
 
     byte[] bytes;
 
+    B p;
+
     public void setA(byte a) {
         this.a = a;
     }
@@ -50,6 +52,10 @@ public class BasicTypeJava {
         this.bytes = bytes;
     }
 
+    public void setP(B p) {
+        this.p = p;
+    }
+
     @Override
     public String toString() {
         return "BasicTypeJava{" +
@@ -62,5 +68,11 @@ public class BasicTypeJava {
                 ", g=" + g +
                 ", bytes=" + Arrays.toString(bytes) +
                 '}';
+    }
+
+
+   public enum B {
+        A,
+        B
     }
 }

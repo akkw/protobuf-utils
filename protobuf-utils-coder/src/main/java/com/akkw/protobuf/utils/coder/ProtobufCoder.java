@@ -13,7 +13,7 @@ public interface ProtobufCoder {
     Object decoder(int fieldNumber, Field field, CodedInputStream input, ExtensionRegistryLite extensionRegistry) throws IOException;
 
     default void encoder(int fieldNumber, CodedOutputStream output, Object o, boolean writeTag, boolean isList) throws IOException {
-        if (writeTag &&  o != null && !ProtobufCoderUtils.basicType.contains(o.getClass())) {
+        if (writeTag &&  o != null && !ProtobufCoderUtils.basicType.contains(o.getClass()) && !o.getClass().isEnum()) {
             output.writeTag(fieldNumber, com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED);
             int size = getSerializedSize(0, o, false, isList);
             output.writeUInt32NoTag(size);

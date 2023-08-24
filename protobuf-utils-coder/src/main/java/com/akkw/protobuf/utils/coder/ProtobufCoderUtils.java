@@ -44,6 +44,7 @@ public class ProtobufCoderUtils {
         collectionType.add(Map.class);
         collectionType.add(HashMap.class);
         collectionType.add(LinkedHashMap.class);
+
     }
 
     public static void parseJavaClass(Class<?> aClass) throws Exception {
